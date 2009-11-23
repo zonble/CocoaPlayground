@@ -12,9 +12,16 @@
 @interface ContactPicsAppDelegate : NSObject <NSApplicationDelegate> 
 {
     NSWindow *window;
-	IBOutlet NSArrayController *arrayController;
 	CGFloat zoom;
+	
+	IBOutlet NSArrayController *arrayController;
+	IBOutlet NSScrollView *imageBrowserScrollView;
+	IBOutlet NSView *imageFlowView;
+	IBOutlet NSView *containerView;
 }
+
+- (IBAction)toogleActiveView:(id)sender;
+- (void)setActiveView:(NSView *)newContentView;
 
 @property (assign) IBOutlet NSWindow *window;
 

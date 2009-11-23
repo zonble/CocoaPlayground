@@ -25,6 +25,10 @@
 
 - (void)awakeFromNib
 {
+	[(IKImageBrowserView *)imageFlowView setDataSource:self];
+	[(IKImageBrowserView *)imageFlowView setDelegate:self];
+	[self setActiveView:imageBrowserScrollView];
+	
 	NSArray *people = [[ABAddressBook sharedAddressBook] people];
 	NSMutableArray *newPeople = [NSMutableArray arrayWithArray:people];
 	[newPeople sortUsingComparator:^(id a, id b) {
@@ -57,6 +61,11 @@
 				[name setString:firstName];
 			}
 			
+			if (![name length]) {
+				NSString *company = [(ABPerson *)record  valueForProperty:kABOrganizationProperty];
+				[name setString:company];
+			}
+			
 			CPImageItem *item = [[[CPImageItem alloc] init] autorelease];
 			item.image = [[[NSImage alloc] initWithData:[(ABPerson *)record imageData]] autorelease];
 			item.imageUID = [record uniqueId];
@@ -65,7 +74,31 @@
 		}
 	}
 	[arrayController setContent:a];
+	[(IKImageBrowserView *)imageFlowView reloadData];
 }
+
+- (IBAction)toogleActiveView:(id)sender
+{
+	if ([sender selectedSegment] == 0) {
+		[self setActiveView:imageBrowserScrollView];
+	}
+	else if ([sender selectedSegment] == 1) {
+		[self setActiveView:imageFlowView];
+	}
+
+}
+
+- (void)setActiveView:(NSView *)newContentView
+{
+	NSRect bounds = [containerView bounds];
+	[newContentView setFrame:bounds];
+	if ([[containerView subviews] count]) {
+		[[[containerView subviews] objectAtIndex:0] removeFromSuperview];
+	}
+	[containerView addSubview:newContentView];
+}
+
+#pragma mark -
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
@@ -76,5 +109,23 @@
 {
 	[NSApp terminate:self];
 }
+
+#pragma mark -
+
+- (NSUInteger)numberOfItemsInImageFlow:(id)aFlowLayer
+{
+	return [[arrayController arrangedObjects] count];
+}
+- (id)imageFlow:(id)aFlowLayer itemAtIndex:(NSInteger)index
+{
+	return [[arrayController arrangedObjects] objectAtIndex:index];
+}
+- (void)imageFlow:(id)aFlowLayer didSelectItemAtIndex:(NSInteger)index
+{
+}
+- (void)imageFlow:(id)aFlowLayer cellWasDoubleClickedAtIndex:(NSInteger)index
+{
+}
+
 
 @end
