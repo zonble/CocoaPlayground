@@ -18,8 +18,14 @@
 	IBOutlet NSScrollView *imageBrowserScrollView;
 	IBOutlet NSView *imageFlowView;
 	IBOutlet NSView *containerView;
+	IBOutlet NSView *fullscreenBackgroundView;
+	IBOutlet NSView *fullscreenContainerView;
+	
+	id fullscreenView;
 }
 
+- (IBAction)fullscreen:(id)sender;
+- (IBAction)exitFullscreen:(id)sender;
 - (IBAction)toogleActiveView:(id)sender;
 - (void)setActiveView:(NSView *)newContentView;
 

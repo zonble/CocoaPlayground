@@ -77,6 +77,29 @@
 	[(IKImageBrowserView *)imageFlowView reloadData];
 }
 
+- (IBAction)fullscreen:(id)sender
+{
+	if (![fullscreenBackgroundView isInFullScreenMode]) {
+		NSView *view = [[containerView subviews] objectAtIndex:0];
+		[view setFrame:[fullscreenContainerView bounds]];
+		[fullscreenContainerView addSubview:view];
+		[fullscreenBackgroundView enterFullScreenMode:[NSScreen mainScreen] withOptions:[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:YES], NSFullScreenModeAllScreens, [NSNumber numberWithInt:CGShieldingWindowLevel()], NSFullScreenModeWindowLevel, nil]];
+		fullscreenView = view;
+	}
+	else {
+		[self exitFullscreen:sender];
+	}
+}
+
+- (IBAction)exitFullscreen:(id)sender
+{
+	[fullscreenBackgroundView exitFullScreenModeWithOptions:nil];
+	if (fullscreenView) {
+		[self setActiveView:fullscreenView];
+		fullscreenView = nil;
+	}
+}
+
 - (IBAction)toogleActiveView:(id)sender
 {
 	if ([sender selectedSegment] == 0) {
