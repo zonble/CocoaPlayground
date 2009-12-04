@@ -10,6 +10,7 @@
 #import "PlurkAPI.h"
 
 #define API_URL @"https://www.plurk.com/API"
+#define U8(x) [NSString stringWithUTF8String:x]
 
 static NSString *loginAction = @"login";
 
@@ -30,6 +31,9 @@ static ObjectivePlurk *sharedInstance;
 	[_request release];
 	_request = nil;
 	[_queue release];
+	[_currentUserInfo release];
+	[_qualifiers release];
+	[_langCodes release];
 	[super dealloc];
 }
 
@@ -40,6 +44,9 @@ static ObjectivePlurk *sharedInstance;
 		_request = [[LFHTTPRequest alloc] init];
 		[_request setDelegate:self];
 		_queue = [[NSMutableArray alloc] init];
+		_currentUserInfo = nil;
+		_qualifiers = [[NSArray alloc] initWithObjects:@"loves", @"likes", @"shares", @"gives", @"hates", @"wants", @"has", @"will", @"asks", @"wishes", @"was", @"feels", @"thinks", @"says", @"is", @":", @"freestyle", @"hopes", @"needs", @"wonders", nil];
+		_langCodes = [[NSDictionary alloc] initWithObjectsAndKeys:U8("English"), @"en", U8("Portugu"), @"pt_BR", U8("中文 (中国)"), @"cn", U8("Català"), @"ca", U8("Ελληνικά"), @"el", U8("Dansk"), @"dk", U8("Deutsch"), @"de", U8("Español"), @"es", U8("Svenska"), @"sv", U8("Norsk bokmål"), @"nb", U8("Hindi"), @"hi", U8("Română"), @"ro", U8("Hrvatski"), @"hr", U8("Français"), @"fr", U8("Pусский"), @"ru", U8("Italiano"), @"it", U8("日本語"), @"ja", U8("עברית"), @"he", U8("Magyar"), @"hu", U8("Nederlands"), @"ne", U8("ไทย"), @"th", U8("Filipino"), @"ta_fp", U8("Bahasa Indonesia"), @"in", U8("Polski"), @"pl", U8("العربية"), @"ar", U8("Finnish"), @"fi", U8("中文 (繁體中文)"), @"tr_ch", U8("Türkçe"), @"tr", U8("Gaeilge"), @"ga", U8("Slovensk"), @"sk", U8("українська"), @"uk", U8("فارسی"), @"fa", nil];
 	}
 	return self;
 }
@@ -132,9 +139,16 @@ static ObjectivePlurk *sharedInstance;
 - (void)loginDidSuccess:(NSDictionary *)sessionInfo
 {
 	id delegate = [sessionInfo valueForKey:@"delegate"];
+	NSDictionary *result = [sessionInfo valueForKey:@"result"];	
+	if ([result valueForKey:@"user_info"]) {
+		NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:result];
+		[userInfo removeObjectForKey:@"plurks"];
+		[userInfo removeObjectForKey:@"plurks_users"];
+		self.currentUserInfo = userInfo;
+	}
+	
 	if ([delegate respondsToSelector:@selector(plurk:didLoggedIn:)]) {
-		NSDictionary *result = [sessionInfo valueForKey:@"result"];
-		NSLog(@"result:%@", [result description]);
+
 		[delegate plurk:self didLoggedIn:result];
 	}
 }
@@ -144,7 +158,6 @@ static ObjectivePlurk *sharedInstance;
 	id delegate = [sessionInfo valueForKey:@"delegate"];
 	if ([delegate respondsToSelector:@selector(plurk:didFailLoggingIn:)]) {
 		NSError *error = [sessionInfo valueForKey:@"error"];
-		NSLog(@"error:%@", [error description]);
 		[delegate plurk:self didFailLoggingIn:error];
 	}	
 }
@@ -185,5 +198,8 @@ static ObjectivePlurk *sharedInstance;
 	[self performSelector:action withObject:sessionInfoWithError];	
 }
 
+@synthesize qualifiers = _qualifiers;
+@synthesize langCodes = _langCodes;
+@synthesize currentUserInfo = _currentUserInfo;
 
 @end

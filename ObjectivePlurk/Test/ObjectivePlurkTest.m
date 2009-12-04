@@ -5,10 +5,17 @@
 - (void)testLogin
 {
 	ObjectivePlurk *plurk = [ObjectivePlurk sharedInstance];
+	[plurk setShouldWaitUntilDone:YES];
 	[plurk loginWithUsername:ACCOUNT password:PASSWD delegate:self];
-//	STFail(@"%@", [plurk description]);
 }
 
+
+- (void)plurk:(ObjectivePlurk *)plurk didLoggedIn:(NSDictionary *)result
+{
+}
+- (void)plurk:(ObjectivePlurk *)plurk didFailLoggingIn:(NSError *)error
+{
+}
 
 
 @end

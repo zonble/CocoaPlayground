@@ -24,6 +24,9 @@
 {
 	LFHTTPRequest *_request;
 	NSMutableArray *_queue;
+	NSDictionary *_currentUserInfo;
+	NSArray *_qualifiers;
+	NSDictionary *_langCodes;
 }
 
 + (ObjectivePlurk *)sharedInstance;
@@ -35,5 +38,9 @@
 - (BOOL)shouldWaitUntilDone;
 
 - (void)loginWithUsername:(NSString *)username password:(NSString *)password delegate:(id)delegate;
+
+@property (readonly) NSArray *qualifiers;
+@property (readonly) NSDictionary *langCodes;
+@property (copy, nonatomic) NSDictionary *currentUserInfo;
 
 @end
