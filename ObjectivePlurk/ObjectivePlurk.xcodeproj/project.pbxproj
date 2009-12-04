@@ -11,7 +11,6 @@
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
-		28860B770F44E54D00985440 /* ObjectivePlurk.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 28860B760F44E54D00985440 /* ObjectivePlurk.xcdatamodel */; };
 		28860BE50F44EE6400985440 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28860BE40F44EE6400985440 /* CoreData.framework */; };
 		2892E4100DC94CBA00A64D0F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2892E40F0DC94CBA00A64D0F /* CoreGraphics.framework */; };
 		2899E5600DE3E45000AC0155 /* RootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2899E55F0DE3E45000AC0155 /* RootViewController.xib */; };
@@ -27,6 +26,23 @@
 		D47077FF10C9962000D8A198 /* NSString+BSJSONAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = D47077FA10C9962000D8A198 /* NSString+BSJSONAdditions.m */; };
 		D470780510C9968B00D8A198 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D470780410C9968B00D8A198 /* CFNetwork.framework */; };
 		D470782110C996AE00D8A198 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D470782010C996AE00D8A198 /* SystemConfiguration.framework */; };
+		D470784F10C997D000D8A198 /* ObjectivePlurk.m in Sources */ = {isa = PBXBuildFile; fileRef = D470784E10C997D000D8A198 /* ObjectivePlurk.m */; };
+		D4A5004E10C9B95700DB71B3 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D470782010C996AE00D8A198 /* SystemConfiguration.framework */; };
+		D4A5004F10C9B95700DB71B3 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D470780410C9968B00D8A198 /* CFNetwork.framework */; };
+		D4A5005010C9B95700DB71B3 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
+		D4A5005110C9B95700DB71B3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
+		D4A5005210C9B95700DB71B3 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2892E40F0DC94CBA00A64D0F /* CoreGraphics.framework */; };
+		D4A5005310C9B95700DB71B3 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28860BE40F44EE6400985440 /* CoreData.framework */; };
+		D4A5005410C9B95C00DB71B3 /* ObjectivePlurkTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D4A5FF4610C9B8D100DB71B3 /* ObjectivePlurkTest.m */; };
+		D4A5005510C9B96500DB71B3 /* ObjectivePlurk.m in Sources */ = {isa = PBXBuildFile; fileRef = D470784E10C997D000D8A198 /* ObjectivePlurk.m */; };
+		D4A5005610C9B96A00DB71B3 /* BSJSONEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = D47077F210C9962000D8A198 /* BSJSONEncoder.m */; };
+		D4A5005710C9B96A00DB71B3 /* NSArray+BSJSONAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = D47077F410C9962000D8A198 /* NSArray+BSJSONAdditions.m */; };
+		D4A5005810C9B96A00DB71B3 /* NSDictionary+BSJSONAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = D47077F610C9962000D8A198 /* NSDictionary+BSJSONAdditions.m */; };
+		D4A5005910C9B96A00DB71B3 /* NSScanner+BSJSONAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = D47077F810C9962000D8A198 /* NSScanner+BSJSONAdditions.m */; };
+		D4A5005A10C9B96A00DB71B3 /* NSString+BSJSONAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = D47077FA10C9962000D8A198 /* NSString+BSJSONAdditions.m */; };
+		D4A5005B10C9B97200DB71B3 /* LFHTTPRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = D47077E510C995E400D8A198 /* LFHTTPRequest.m */; };
+		D4A5005C10C9B97200DB71B3 /* LFSiteReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = D47077E710C995E400D8A198 /* LFSiteReachability.m */; };
+		D4A5005D10C9B97200DB71B3 /* NSData+LFHTTPFormExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = D47077EA10C995E400D8A198 /* NSData+LFHTTPFormExtensions.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,7 +51,6 @@
 		1D3623250D0F684500981E51 /* ObjectivePlurkAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ObjectivePlurkAppDelegate.m; sourceTree = "<group>"; };
 		1D6058910D05DD3D006BFB54 /* ObjectivePlurk.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ObjectivePlurk.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		28860B760F44E54D00985440 /* ObjectivePlurk.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = ObjectivePlurk.xcdatamodel; sourceTree = "<group>"; };
 		28860BE40F44EE6400985440 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		2892E40F0DC94CBA00A64D0F /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		2899E55F0DE3E45000AC0155 /* RootViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RootViewController.xib; sourceTree = "<group>"; };
@@ -65,6 +80,12 @@
 		D470780410C9968B00D8A198 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		D470782010C996AE00D8A198 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		D470784710C996FE00D8A198 /* PlurkAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlurkAPI.h; sourceTree = "<group>"; };
+		D470784D10C997D000D8A198 /* ObjectivePlurk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ObjectivePlurk.h; path = API/ObjectivePlurk.h; sourceTree = "<group>"; };
+		D470784E10C997D000D8A198 /* ObjectivePlurk.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ObjectivePlurk.m; path = API/ObjectivePlurk.m; sourceTree = "<group>"; };
+		D4A5FF3C10C9B86E00DB71B3 /* APITest.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = APITest.octest; path = "build/Debug-iphonesimulator/APITest.octest"; sourceTree = "<group>"; };
+		D4A5FF3D10C9B86E00DB71B3 /* APITest-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "APITest-Info.plist"; sourceTree = "<group>"; };
+		D4A5FF4510C9B8D100DB71B3 /* ObjectivePlurkTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ObjectivePlurkTest.h; path = Test/ObjectivePlurkTest.h; sourceTree = "<group>"; };
+		D4A5FF4610C9B8D100DB71B3 /* ObjectivePlurkTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ObjectivePlurkTest.m; path = Test/ObjectivePlurkTest.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +99,19 @@
 				28860BE50F44EE6400985440 /* CoreData.framework in Frameworks */,
 				D470780510C9968B00D8A198 /* CFNetwork.framework in Frameworks */,
 				D470782110C996AE00D8A198 /* SystemConfiguration.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D4A5FF3910C9B86E00DB71B3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D4A5004E10C9B95700DB71B3 /* SystemConfiguration.framework in Frameworks */,
+				D4A5004F10C9B95700DB71B3 /* CFNetwork.framework in Frameworks */,
+				D4A5005010C9B95700DB71B3 /* UIKit.framework in Frameworks */,
+				D4A5005110C9B95700DB71B3 /* Foundation.framework in Frameworks */,
+				D4A5005210C9B95700DB71B3 /* CoreGraphics.framework in Frameworks */,
+				D4A5005310C9B95700DB71B3 /* CoreData.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -99,6 +133,7 @@
 			isa = PBXGroup;
 			children = (
 				1D6058910D05DD3D006BFB54 /* ObjectivePlurk.app */,
+				D4A5FF3C10C9B86E00DB71B3 /* APITest.octest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -106,6 +141,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				D4A5FF3210C9B85000DB71B3 /* Test */,
 				D470784510C996E600D8A198 /* API Box */,
 				D47077E210C995C700D8A198 /* Exrernal Libraries */,
 				080E96DDFE201D6D7F000001 /* Classes */,
@@ -113,6 +149,7 @@
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
+				D4A5FF3D10C9B86E00DB71B3 /* APITest-Info.plist */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -129,7 +166,6 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				28860B760F44E54D00985440 /* ObjectivePlurk.xcdatamodel */,
 				2899E55F0DE3E45000AC0155 /* RootViewController.xib */,
 				28AD735F0D9D9599002E5188 /* MainWindow.xib */,
 				8D1107310486CEB800E47090 /* ObjectivePlurk-Info.plist */,
@@ -194,8 +230,19 @@
 			isa = PBXGroup;
 			children = (
 				D470784710C996FE00D8A198 /* PlurkAPI.h */,
+				D470784D10C997D000D8A198 /* ObjectivePlurk.h */,
+				D470784E10C997D000D8A198 /* ObjectivePlurk.m */,
 			);
 			name = "API Box";
+			sourceTree = "<group>";
+		};
+		D4A5FF3210C9B85000DB71B3 /* Test */ = {
+			isa = PBXGroup;
+			children = (
+				D4A5FF4510C9B8D100DB71B3 /* ObjectivePlurkTest.h */,
+				D4A5FF4610C9B8D100DB71B3 /* ObjectivePlurkTest.m */,
+			);
+			name = Test;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -218,6 +265,24 @@
 			productReference = 1D6058910D05DD3D006BFB54 /* ObjectivePlurk.app */;
 			productType = "com.apple.product-type.application";
 		};
+		D4A5FF3B10C9B86E00DB71B3 /* APITest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D4A5FF4010C9B86F00DB71B3 /* Build configuration list for PBXNativeTarget "APITest" */;
+			buildPhases = (
+				D4A5FF3710C9B86E00DB71B3 /* Resources */,
+				D4A5FF3810C9B86E00DB71B3 /* Sources */,
+				D4A5FF3910C9B86E00DB71B3 /* Frameworks */,
+				D4A5FF3A10C9B86E00DB71B3 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = APITest;
+			productName = APITest;
+			productReference = D4A5FF3C10C9B86E00DB71B3 /* APITest.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -238,6 +303,7 @@
 			projectRoot = "";
 			targets = (
 				1D6058900D05DD3D006BFB54 /* ObjectivePlurk */,
+				D4A5FF3B10C9B86E00DB71B3 /* APITest */,
 			);
 		};
 /* End PBXProject section */
@@ -252,7 +318,30 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D4A5FF3710C9B86E00DB71B3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		D4A5FF3A10C9B86E00DB71B3 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		1D60588E0D05DD3D006BFB54 /* Sources */ = {
@@ -262,7 +351,6 @@
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				1D3623260D0F684500981E51 /* ObjectivePlurkAppDelegate.m in Sources */,
 				28C286E10D94DF7D0034E888 /* RootViewController.m in Sources */,
-				28860B770F44E54D00985440 /* ObjectivePlurk.xcdatamodel in Sources */,
 				D47077EB10C995E400D8A198 /* LFHTTPRequest.m in Sources */,
 				D47077EC10C995E400D8A198 /* LFSiteReachability.m in Sources */,
 				D47077ED10C995E400D8A198 /* NSData+LFHTTPFormExtensions.m in Sources */,
@@ -271,6 +359,24 @@
 				D47077FD10C9962000D8A198 /* NSDictionary+BSJSONAdditions.m in Sources */,
 				D47077FE10C9962000D8A198 /* NSScanner+BSJSONAdditions.m in Sources */,
 				D47077FF10C9962000D8A198 /* NSString+BSJSONAdditions.m in Sources */,
+				D470784F10C997D000D8A198 /* ObjectivePlurk.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D4A5FF3810C9B86E00DB71B3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D4A5005B10C9B97200DB71B3 /* LFHTTPRequest.m in Sources */,
+				D4A5005C10C9B97200DB71B3 /* LFSiteReachability.m in Sources */,
+				D4A5005D10C9B97200DB71B3 /* NSData+LFHTTPFormExtensions.m in Sources */,
+				D4A5005610C9B96A00DB71B3 /* BSJSONEncoder.m in Sources */,
+				D4A5005710C9B96A00DB71B3 /* NSArray+BSJSONAdditions.m in Sources */,
+				D4A5005810C9B96A00DB71B3 /* NSDictionary+BSJSONAdditions.m in Sources */,
+				D4A5005910C9B96A00DB71B3 /* NSScanner+BSJSONAdditions.m in Sources */,
+				D4A5005A10C9B96A00DB71B3 /* NSString+BSJSONAdditions.m in Sources */,
+				D4A5005510C9B96500DB71B3 /* ObjectivePlurk.m in Sources */,
+				D4A5005410C9B95C00DB71B3 /* ObjectivePlurkTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -329,6 +435,62 @@
 			};
 			name = Release;
 		};
+		D4A5FF3E10C9B86F00DB71B3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
+					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+				);
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INFOPLIST_FILE = "APITest-Info.plist";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					SenTestingKit,
+					"-framework",
+					UIKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = APITest;
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Debug;
+		};
+		D4A5FF3F10C9B86F00DB71B3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = (
+					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
+					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+				);
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				INFOPLIST_FILE = "APITest-Info.plist";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					SenTestingKit,
+					"-framework",
+					UIKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = APITest;
+				WRAPPER_EXTENSION = octest;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -346,6 +508,15 @@
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,
 				C01FCF5008A954540054247B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D4A5FF4010C9B86F00DB71B3 /* Build configuration list for PBXNativeTarget "APITest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D4A5FF3E10C9B86F00DB71B3 /* Debug */,
+				D4A5FF3F10C9B86F00DB71B3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
