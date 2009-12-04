@@ -6,4 +6,4 @@ build
 .DS_Store
 CommitVersion.xcconfig
 dsa_priv.pem
-
+*PlurkAPI.h*
