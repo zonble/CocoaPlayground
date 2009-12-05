@@ -12,12 +12,6 @@
 #define API_URL @"https://www.plurk.com"
 #define U8(x) [NSString stringWithUTF8String:x]
 
-NSString *loginAction = @"login";
-NSString *retriveMessageAction = @"retriveMessageAction";
-NSString *retriveMessagesAction = @"retriveMessagesAction";
-NSString *retriveUnreadMessagesAction = @"retriveUnreadMessagesAction";
-NSString *addMessageAction = @"AddMessage";
-
 static ObjectivePlurk *sharedInstance;
 
 @implementation ObjectivePlurk
@@ -167,11 +161,15 @@ static ObjectivePlurk *sharedInstance;
 	}
 }
 
+#pragma mark Users
+
 - (void)loginWithUsername:(NSString *)username password:(NSString *)password delegate:(id)delegate
 {
 	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:username, @"username", password, @"password", nil];
 	[self addRequestWithURLPath:@"/API/Users/login" arguments:args actionName:loginAction successAction:@selector(loginDidSuccess:) failAction:@selector(loginDidFail:) delegate:delegate];
 }
+
+#pragma mark Timeline
 
 - (void)retrieveMessageWithIdentifier:(NSString *)identifer delegate:(id)delegate
 {
@@ -220,6 +218,25 @@ static ObjectivePlurk *sharedInstance;
 	[self addRequestWithURLPath:@"/API/Timeline/getUnreadPlurks" arguments:args actionName:retriveUnreadMessagesAction successAction:@selector(commonAPIDidSuccess:) failAction:@selector(commonAPIDidFail:) delegate:delegate];
 
 }
+
+- (void)muteMessagesWithIdentifiers:(NSArray *)identifiers delegate:(id)delegate
+{
+	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:[identifiers jsonStringValue], @"ids", nil];
+	[self addRequestWithURLPath:@"/API/Timeline/mutePlurks" arguments:args actionName:muteMessagesAction successAction:@selector(loginDidSuccess:) failAction:@selector(loginDidFail:) delegate:delegate];
+}
+
+- (void)unmuteMessagesWithIdentifiers:(NSArray *)identifiers delegate:(id)delegate
+{
+	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:[identifiers jsonStringValue], @"ids", nil];
+	[self addRequestWithURLPath:@"/API/Timeline/unmutePlurks" arguments:args actionName:unmuteMessagesAction successAction:@selector(loginDidSuccess:) failAction:@selector(loginDidFail:) delegate:delegate];
+}
+
+- (void)markMessagesAsReadWithIdentifiers:(NSArray *)identifiers delegate:(id)delegate
+{
+	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:[identifiers jsonStringValue], @"ids", nil];
+	[self addRequestWithURLPath:@"/API/Timeline/markAsRead" arguments:args actionName:markMessageAsReadAction successAction:@selector(loginDidSuccess:) failAction:@selector(loginDidFail:) delegate:delegate];
+}
+
 
 - (void)addMessageWithContent:(NSString *)content qualifier:(NSString *)qualifier canComment:(OPCanComment)canComment lang:(NSString *)lang limitToUsers:(NSArray *)users delegate:(id)delegate
 {

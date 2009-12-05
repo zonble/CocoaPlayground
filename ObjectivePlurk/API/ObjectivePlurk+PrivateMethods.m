@@ -8,6 +8,14 @@
 
 #import "ObjectivePlurk+PrivateMethods.h"
 
+NSString *loginAction = @"login";
+NSString *retriveMessageAction = @"retriveMessageAction";
+NSString *retriveMessagesAction = @"retriveMessagesAction";
+NSString *retriveUnreadMessagesAction = @"retriveUnreadMessagesAction";
+NSString *muteMessagesAction = @"muteMessagesAction";
+NSString *unmuteMessagesAction = @"unmuteMessagesAction";
+NSString *markMessageAsReadAction = @"markMessageAsReadAction";
+NSString *addMessageAction = @"AddMessage";
 
 @implementation ObjectivePlurk(PrivateMethods)
 
@@ -43,12 +51,7 @@
 	id delegate = [sessionInfo valueForKey:@"delegate"];
 	NSDictionary *result = [sessionInfo valueForKey:@"result"];	
 	NSString *actionName = [sessionInfo valueForKey:@"actionName"];	
-	if ([actionName isEqualToString:addMessageAction]) {
-		if ([delegate respondsToSelector:@selector(plurk:didLoggedIn:)]) {
-			[delegate plurk:self didAddMessage:result];
-		}
-	}
-	else if ([actionName isEqualToString:retriveMessageAction]) {
+	if ([actionName isEqualToString:retriveMessageAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didRetrieveMessage:)]) {
 			[delegate plurk:self didRetrieveMessage:result];
 		}
@@ -63,6 +66,26 @@
 			[delegate plurk:self didRetrieveUnreadMessages:result];
 		}
 	}
+	else if ([actionName isEqualToString:muteMessagesAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didMuteMessages:)]) {
+			[delegate plurk:self didMuteMessages:result];
+		}
+	}
+	else if ([actionName isEqualToString:unmuteMessagesAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didUnmuteMessages:)]) {
+			[delegate plurk:self didUnmuteMessages:result];
+		}
+	}
+	else if ([actionName isEqualToString:markMessageAsReadAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didMarkMessagesAsRead:)]) {
+			[delegate plurk:self didMarkMessagesAsRead:result];
+		}
+	}
+	else if ([actionName isEqualToString:addMessageAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didLoggedIn:)]) {
+			[delegate plurk:self didAddMessage:result];
+		}
+	}
 	
 }
 
@@ -71,12 +94,8 @@
 	id delegate = [sessionInfo valueForKey:@"delegate"];
 	NSError *error = [sessionInfo valueForKey:@"error"];
 	NSString *actionName = [sessionInfo valueForKey:@"actionName"];
-	if ([actionName isEqualToString:addMessageAction]) {
-		if ([delegate respondsToSelector:@selector(plurk:didFailAddingMessage:)]) {
-			[delegate plurk:self didFailAddingMessage:error];
-		}	
-	}
-	else if ([actionName isEqualToString:retriveMessageAction]) {
+	
+	if ([actionName isEqualToString:retriveMessageAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didFailRetrievingMessage:)]) {
 			[delegate plurk:self didFailRetrievingMessage:error];
 		}
@@ -91,6 +110,27 @@
 			[delegate plurk:self didFailRetrievingUnreadMessages:error];
 		}
 	}
+	else if ([actionName isEqualToString:muteMessagesAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailMutingMessages:)]) {
+			[delegate plurk:self didFailMutingMessages:error];
+		}
+	}
+	else if ([actionName isEqualToString:unmuteMessagesAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailUnmutingMessages:)]) {
+			[delegate plurk:self didFailUnmutingMessages:error];
+		}
+	}
+	else if ([actionName isEqualToString:markMessageAsReadAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailMarkingMessagesAsRead:)]) {
+			[delegate plurk:self didFailMarkingMessagesAsRead:error];
+		}
+	}
+	else if ([actionName isEqualToString:addMessageAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailAddingMessage:)]) {
+			[delegate plurk:self didFailAddingMessage:error];
+		}	
+	}
+	
 	
 }
 

@@ -32,6 +32,15 @@
 - (void)plurk:(ObjectivePlurk *)plurk didRetrieveUnreadMessages:(NSDictionary *)result;
 - (void)plurk:(ObjectivePlurk *)plurk didFailRetrievingUnreadMessages:(NSError *)error;
 
+- (void)plurk:(ObjectivePlurk *)plurk didMuteMessages:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailMutingMessages:(NSError *)error;
+
+- (void)plurk:(ObjectivePlurk *)plurk didUnmuteMessages:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailUnmutingMessages:(NSError *)error;
+
+- (void)plurk:(ObjectivePlurk *)plurk didMarkMessagesAsRead:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailMarkingMessagesAsRead:(NSError *)error;
+
 - (void)plurk:(ObjectivePlurk *)plurk didAddMessage:(NSDictionary *)result;
 - (void)plurk:(ObjectivePlurk *)plurk didFailAddingMessage:(NSError *)error;
 
@@ -47,6 +56,9 @@ extern NSString *loginAction;
 extern NSString *retriveMessageAction;
 extern NSString *retriveMessagesAction;
 extern NSString *retriveUnreadMessagesAction;
+extern NSString *muteMessagesAction;
+extern NSString *unmuteMessagesAction;
+extern NSString *markMessageAsReadAction;
 extern NSString *addMessageAction;
 
 @interface ObjectivePlurk : NSObject
@@ -75,11 +87,11 @@ extern NSString *addMessageAction;
 - (void)retrieveMessageWithIdentifier:(NSString *)identifer delegate:(id)delegate;
 - (void)retrieveMessagesWithOffset:(NSDate *)offsetDate limit:(NSInteger)limit user:(NSString *)userID isResponded:(BOOL)isResponded isPrivate:(BOOL)isPrivate delegate:(id)delegate;
 - (void)retrieveUnreadMessagesWithOffset:(NSDate *)offsetDate limit:(NSInteger)limit delegate:(id)delegate;
+- (void)muteMessagesWithIdentifiers:(NSArray *)identifiers delegate:(id)delegate;
+- (void)unmuteMessagesWithIdentifiers:(NSArray *)identifiers delegate:(id)delegate;
+- (void)markMessagesAsReadWithIdentifiers:(NSArray *)identifiers delegate:(id)delegate;
 
 - (void)addMessageWithContent:(NSString *)content qualifier:(NSString *)qualifier canComment:(OPCanComment)canComment lang:(NSString *)lang limitToUsers:(NSArray *)users delegate:(id)delegate;
-
-//- (void)setShouldWaitUntilDone:(BOOL)flag;
-//- (BOOL)shouldWaitUntilDone;
 
 @property (assign) BOOL isLoggedIn;
 @property (readonly) NSArray *qualifiers;
