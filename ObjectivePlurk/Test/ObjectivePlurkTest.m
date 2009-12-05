@@ -7,7 +7,7 @@
 	ObjectivePlurk *plurk = [ObjectivePlurk sharedInstance];
 	[plurk setShouldWaitUntilDone:YES];
 	[plurk loginWithUsername:ACCOUNT password:PASSWD delegate:self];
-	[plurk addMessageWithContent:@"This is a test for testing the Objective-C API" qualifier:@"says" canComment:OPEveryOneCanComment lang:@"en" limitToUsers:[NSArray array] delegate:self];
+	[plurk addNewMessageWithContent:@"This is a test for testing the Objective-C API" qualifier:@"says" othersCanComment:OPEveryOneCanComment lang:@"en" limitToUsers:[NSArray array] delegate:self];
 }
 
 

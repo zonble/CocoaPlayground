@@ -21,6 +21,14 @@
 - (void)plurk:(ObjectivePlurk *)plurk didLoggedIn:(NSDictionary *)result;
 - (void)plurk:(ObjectivePlurk *)plurk didFailLoggingIn:(NSError *)error;
 
+#pragma mark Profiles
+
+- (void)plurk:(ObjectivePlurk *)plurk didRetrieveMyProfile:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailRetrievingMyProfile:(NSError *)error;
+
+- (void)plurk:(ObjectivePlurk *)plurk didRetrievePublicProfile:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailRetrievingPublicProfile:(NSError *)error;
+
 #pragma mark Timeline
 
 - (void)plurk:(ObjectivePlurk *)plurk didRetrieveMessage:(NSDictionary *)result;
@@ -54,20 +62,26 @@
 @end
 
 typedef enum {
-	OPEveryOneCanComment = 0,
-	OPNoOneCanComment = 1,
-	OPOnlyFriendsCanComment = 2
-} OPCanComment;
-
-typedef enum {
 	OPSmallUserProfileImageSize = 0,
 	OPMediumUserProfileImageSize = 1,
 	OPBigUserProfileImageSize = 2
 } OPUserProfileImageSize;
 
+
+typedef enum {
+	OPEveryOneCanComment = 0,
+	OPNoOneCanComment = 1,
+	OPOnlyFriendsCanComment = 2
+} OPCanComment;
+
+
 extern NSString *ObjectivePlurkErrorDomain;
 
 extern NSString *OPLoginAction;
+
+extern NSString *OPRetrieveMyProfileAction;
+extern NSString *OPRetrievePublicProfileAction;
+
 extern NSString *OPRetriveMessageAction;
 extern NSString *OPRetriveMessagesAction;
 extern NSString *OPRetriveUnreadMessagesAction;
@@ -101,18 +115,23 @@ extern NSString *OPEditMessageAction;
 
 - (void)loginWithUsername:(NSString *)username password:(NSString *)password delegate:(id)delegate;
 
+#pragma mark Profiles
+
+- (void)retrieveMyProfileWithDelegate:(id)delegate;
+- (void)retrievePublicProfileWithUserIdentifier:(NSString *)userIdentifier delegate:(id)delegate;
+
 #pragma mark Timeline
 
-- (void)retrieveMessageWithIdentifier:(NSString *)identifer delegate:(id)delegate;
-- (void)retrieveMessagesWithOffset:(NSDate *)offsetDate limit:(NSInteger)limit user:(NSString *)userID isResponded:(BOOL)isResponded isPrivate:(BOOL)isPrivate delegate:(id)delegate;
-- (void)retrieveUnreadMessagesWithOffset:(NSDate *)offsetDate limit:(NSInteger)limit delegate:(id)delegate;
-- (void)muteMessagesWithIdentifiers:(NSArray *)identifiers delegate:(id)delegate;
-- (void)unmuteMessagesWithIdentifiers:(NSArray *)identifiers delegate:(id)delegate;
-- (void)markMessagesAsReadWithIdentifiers:(NSArray *)identifiers delegate:(id)delegate;
-- (void)addMessageWithContent:(NSString *)content qualifier:(NSString *)qualifier canComment:(OPCanComment)canComment lang:(NSString *)lang limitToUsers:(NSArray *)users delegate:(id)delegate;
+- (void)retrieveMessageWithMessageIdentifier:(NSString *)identifer delegate:(id)delegate;
+- (void)retrieveMessagesWithDateOffset:(NSDate *)offsetDate limit:(NSInteger)limit user:(NSString *)userID isResponded:(BOOL)isResponded isPrivate:(BOOL)isPrivate delegate:(id)delegate;
+- (void)retrieveUnreadMessagesWithDateOffset:(NSDate *)offsetDate limit:(NSInteger)limit delegate:(id)delegate;
+- (void)muteMessagesWithMessageIdentifiers:(NSArray *)identifiers delegate:(id)delegate;
+- (void)unmuteMessagesWithMessageIdentifiers:(NSArray *)identifiers delegate:(id)delegate;
+- (void)markMessagesAsReadWithMessageIdentifiers:(NSArray *)identifiers delegate:(id)delegate;
+- (void)addNewMessageWithContent:(NSString *)content qualifier:(NSString *)qualifier othersCanComment:(OPCanComment)canComment lang:(NSString *)lang limitToUsers:(NSArray *)users delegate:(id)delegate;
 
-- (void)deleteMessageWithIdentifier:(NSString *)identifer delegate:(id)delegate;
-- (void)editMessageWithIdentifier:(NSString *)identifer content:(NSString *)content delegate:(id)delegate;
+- (void)deleteMessageWithMessageIdentifier:(NSString *)identifer delegate:(id)delegate;
+- (void)editMessageWithMessageIdentifier:(NSString *)identifer content:(NSString *)content delegate:(id)delegate;
 
 @property (readonly) NSArray *qualifiers;
 @property (readonly) NSDictionary *langCodes;

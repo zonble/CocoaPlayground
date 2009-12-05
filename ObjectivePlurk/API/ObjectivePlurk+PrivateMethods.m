@@ -11,6 +11,10 @@
 NSString *ObjectivePlurkErrorDomain = @"ObjectivePlurkErrorDomain";
 
 NSString *OPLoginAction = @"OPLoginAction";
+
+NSString *OPRetrieveMyProfileAction = @"OPRetrieveMyProfileAction";
+NSString *OPRetrievePublicProfileAction = @"OPRetrievePublicProfileAction";
+
 NSString *OPRetriveMessageAction = @"OPRetriveMessageAction";
 NSString *OPRetriveMessagesAction = @"OPRetriveMessagesAction";
 NSString *OPRetriveUnreadMessagesAction = @"OPRetriveUnreadMessagesAction";
@@ -76,7 +80,17 @@ NSString *OPEditMessageAction = @"OPEditMessageAction";
 	id delegate = [sessionInfo valueForKey:@"delegate"];	
 	NSString *actionName = [sessionInfo valueForKey:@"actionName"];	
 
-	if ([actionName isEqualToString:OPRetriveMessageAction]) {
+	if ([actionName isEqualToString:OPRetrieveMyProfileAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didRetrieveMyProfile:)]) {
+			[delegate plurk:self didRetrieveMyProfile:result];
+		}
+	}
+	else if ([actionName isEqualToString:OPRetrievePublicProfileAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didRetrievePublicProfile:)]) {
+			[delegate plurk:self didRetrievePublicProfile:result];
+		}
+	}	
+	else if ([actionName isEqualToString:OPRetriveMessageAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didRetrieveMessage:)]) {
 			[delegate plurk:self didRetrieveMessage:result];
 		}
@@ -116,7 +130,7 @@ NSString *OPEditMessageAction = @"OPEditMessageAction";
 			[delegate plurk:self didDeleteMessage:result];
 		}
 	}
-	else if ([actionName isEqualToString:OPDeleteMessageAction]) {
+	else if ([actionName isEqualToString:OPEditMessageAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didEditMessage:)]) {
 			[delegate plurk:self didEditMessage:result];
 		}
@@ -130,8 +144,18 @@ NSString *OPEditMessageAction = @"OPEditMessageAction";
 	id delegate = [sessionInfo valueForKey:@"delegate"];
 
 	NSString *actionName = [sessionInfo valueForKey:@"actionName"];
-	
-	if ([actionName isEqualToString:OPRetriveMessageAction]) {
+
+	if ([actionName isEqualToString:OPRetrieveMyProfileAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailRetrievingMyProfile:)]) {
+			[delegate plurk:self didFailRetrievingMyProfile:error];
+		}
+	}	
+	else if ([actionName isEqualToString:OPRetrievePublicProfileAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailRetrievingPublicProfile:)]) {
+			[delegate plurk:self didFailRetrievingPublicProfile:error];
+		}
+	}	
+	else if ([actionName isEqualToString:OPRetriveMessageAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didFailRetrievingMessage:)]) {
 			[delegate plurk:self didFailRetrievingMessage:error];
 		}

@@ -207,9 +207,26 @@ static ObjectivePlurk *sharedInstance;
 	[self addRequestWithURLPath:@"/API/Users/login" arguments:args actionName:OPLoginAction successAction:@selector(loginDidSuccess:) failAction:@selector(loginDidFail:) delegate:delegate];
 }
 
+#pragma mark Profiles
+
+- (void)retrieveMyProfileWithDelegate:(id)delegate
+{
+	[self addRequestWithURLPath:@"/API/Profile/getOwnProfile" arguments:nil actionName:OPRetrieveMyProfileAction successAction:@selector(commonAPIDidSuccess:) failAction:@selector(commonAPIDidFail:) delegate:delegate];
+}
+
+- (void)retrievePublicProfileWithUserIdentifier:(NSString *)userIdentifier delegate:(id)delegate
+{
+	if ([userIdentifier isKindOfClass:[NSNumber class]]) {
+		userIdentifier = [(NSNumber *)userIdentifier stringValue];
+	}
+	
+	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:userIdentifier, @"user_id", nil];
+	[self addRequestWithURLPath:@"/API/Profile/getPublicProfile" arguments:args actionName:OPRetrievePublicProfileAction successAction:@selector(commonAPIDidSuccess:) failAction:@selector(commonAPIDidFail:) delegate:delegate];	
+}
+
 #pragma mark Timeline
 
-- (void)retrieveMessageWithIdentifier:(NSString *)identifer delegate:(id)delegate
+- (void)retrieveMessageWithMessageIdentifier:(NSString *)identifer delegate:(id)delegate
 {
 	if ([identifer isKindOfClass:[NSNumber class]]) {
 		identifer = [(NSNumber *)identifer stringValue];
@@ -219,7 +236,7 @@ static ObjectivePlurk *sharedInstance;
 	[self addRequestWithURLPath:@"/API/Timeline/getPlurk" arguments:args actionName:OPRetriveMessageAction successAction:@selector(commonAPIDidSuccess:) failAction:@selector(commonAPIDidFail:) delegate:delegate];
 }
 
-- (void)retrieveMessagesWithOffset:(NSDate *)offsetDate limit:(NSInteger)limit user:(NSString *)userID isResponded:(BOOL)isResponded isPrivate:(BOOL)isPrivate delegate:(id)delegate
+- (void)retrieveMessagesWithDateOffset:(NSDate *)offsetDate limit:(NSInteger)limit user:(NSString *)userID isResponded:(BOOL)isResponded isPrivate:(BOOL)isPrivate delegate:(id)delegate
 {
 	NSMutableDictionary *args = [NSMutableDictionary dictionary];
 	if (offsetDate) {
@@ -243,7 +260,7 @@ static ObjectivePlurk *sharedInstance;
 	
 }
 
-- (void)retrieveUnreadMessagesWithOffset:(NSDate *)offsetDate limit:(NSInteger)limit delegate:(id)delegate
+- (void)retrieveUnreadMessagesWithDateOffset:(NSDate *)offsetDate limit:(NSInteger)limit delegate:(id)delegate
 {
 	NSMutableDictionary *args = [NSMutableDictionary dictionary];
 	if (offsetDate) {
@@ -257,25 +274,25 @@ static ObjectivePlurk *sharedInstance;
 
 }
 
-- (void)muteMessagesWithIdentifiers:(NSArray *)identifiers delegate:(id)delegate
+- (void)muteMessagesWithMessageIdentifiers:(NSArray *)identifiers delegate:(id)delegate
 {
 	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:[identifiers jsonStringValue], @"ids", nil];
 	[self addRequestWithURLPath:@"/API/Timeline/mutePlurks" arguments:args actionName:OPMuteMessagesAction successAction:@selector(loginDidSuccess:) failAction:@selector(loginDidFail:) delegate:delegate];
 }
 
-- (void)unmuteMessagesWithIdentifiers:(NSArray *)identifiers delegate:(id)delegate
+- (void)unmuteMessagesWithMessageIdentifiers:(NSArray *)identifiers delegate:(id)delegate
 {
 	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:[identifiers jsonStringValue], @"ids", nil];
 	[self addRequestWithURLPath:@"/API/Timeline/unmutePlurks" arguments:args actionName:OPUnmuteMessagesAction successAction:@selector(loginDidSuccess:) failAction:@selector(loginDidFail:) delegate:delegate];
 }
 
-- (void)markMessagesAsReadWithIdentifiers:(NSArray *)identifiers delegate:(id)delegate
+- (void)markMessagesAsReadWithMessageIdentifiers:(NSArray *)identifiers delegate:(id)delegate
 {
 	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:[identifiers jsonStringValue], @"ids", nil];
 	[self addRequestWithURLPath:@"/API/Timeline/markAsRead" arguments:args actionName:OPMarkMessageAsReadAction successAction:@selector(loginDidSuccess:) failAction:@selector(loginDidFail:) delegate:delegate];
 }
 
-- (void)addMessageWithContent:(NSString *)content qualifier:(NSString *)qualifier canComment:(OPCanComment)canComment lang:(NSString *)lang limitToUsers:(NSArray *)users delegate:(id)delegate
+- (void)addNewMessageWithContent:(NSString *)content qualifier:(NSString *)qualifier othersCanComment:(OPCanComment)canComment lang:(NSString *)lang limitToUsers:(NSArray *)users delegate:(id)delegate
 {
 	NSString *limitString = @"";
 	if ([users count]) {
@@ -285,7 +302,7 @@ static ObjectivePlurk *sharedInstance;
 	[self addRequestWithURLPath:@"/API/Timeline/plurkAdd" arguments:args actionName:OPAddMessageAction successAction:@selector(commonAPIDidSuccess:) failAction:@selector(commonAPIDidFail:) delegate:delegate];
 }
 
-- (void)deleteMessageWithIdentifier:(NSString *)identifer delegate:(id)delegate
+- (void)deleteMessageWithMessageIdentifier:(NSString *)identifer delegate:(id)delegate
 {
 	if ([identifer isKindOfClass:[NSNumber class]]) {
 		identifer = [(NSNumber *)identifer stringValue];
@@ -294,7 +311,7 @@ static ObjectivePlurk *sharedInstance;
 	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:identifer, @"plurk_id", nil];
 	[self addRequestWithURLPath:@"/API/Timeline/plurkDelete" arguments:args actionName:OPDeleteMessageAction successAction:@selector(commonAPIDidSuccess:) failAction:@selector(commonAPIDidFail:) delegate:delegate];	
 }
-- (void)editMessageWithIdentifier:(NSString *)identifer content:(NSString *)content delegate:(id)delegate
+- (void)editMessageWithMessageIdentifier:(NSString *)identifer content:(NSString *)content delegate:(id)delegate
 {
 	if ([identifer isKindOfClass:[NSNumber class]]) {
 		identifer = [(NSNumber *)identifer stringValue];
