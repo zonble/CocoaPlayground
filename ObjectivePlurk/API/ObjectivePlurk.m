@@ -161,6 +161,44 @@ static ObjectivePlurk *sharedInstance;
 	}
 }
 
+- (NSString *)imageURLStringForUser:(id)identifier size:(OPUserProfileImageSize)size hasProfileImage:(BOOL)hasProfileImage avatar:(NSString *)avatar
+{
+	if (!hasProfileImage) {
+		switch (size) {
+			case OPSmallUserProfileImageSize:
+				return @"http://www.plurk.com/static/default_small.gif";
+				break;
+			case OPMediumUserProfileImageSize:
+				return @"http://www.plurk.com/static/default_medium.gif";
+				break;
+			case OPBigUserProfileImageSize:
+				return @"http://www.plurk.com/static/default_big.gif";
+				break;			
+			default:
+				return nil;
+				break;
+		}
+	}
+	if (!avatar) {
+		avatar = @"";
+	}
+	
+	switch (size) {
+		case OPSmallUserProfileImageSize:
+			return [NSString stringWithFormat:@"http://avatars.plurk.com/%d-small%@.gif", [identifier intValue], avatar];
+			break;
+		case OPMediumUserProfileImageSize:
+			return [NSString stringWithFormat:@"http://avatars.plurk.com/%d-medium%@.gif", [identifier intValue], avatar];
+			break;
+		case OPBigUserProfileImageSize:
+			return [NSString stringWithFormat:@"http://avatars.plurk.com/%d-big%@.jpg", [identifier intValue], avatar];
+			break;			
+		default:
+			break;
+	}
+	return nil;
+}
+
 #pragma mark Users
 
 - (void)loginWithUsername:(NSString *)username password:(NSString *)password delegate:(id)delegate

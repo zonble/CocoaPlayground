@@ -32,7 +32,7 @@
     [window makeKeyAndVisible];
 	
 	ObjectivePlurk *plurk = [ObjectivePlurk sharedInstance];
-	[plurk loginWithUsername:ACCOUNT password:PASSWD delegate:self];
+	[plurk loginWithUsername:@"1234" password:PASSWD delegate:self];
 }
 
 /**
@@ -53,7 +53,8 @@
 	NSLog(@"%s", __PRETTY_FUNCTION__);
 //	[plurk addMessageWithContent:@"This is a test for testing the Objective-C API" qualifier:@"says" canComment:OPEveryOneCanComment lang:@"en" limitToUsers:[NSArray array] delegate:self];
 
-//	NSLog(@"result:%@", [result description]);
+	NSLog(@"result:%@", [result description]);
+	NSLog(@"test:%@", [plurk imageURLStringForUser:[NSNumber numberWithInt:3291538] size:OPMediumUserProfileImageSize hasProfileImage:YES avatar:@""]);
 //	NSArray *messages = [result valueForKey:@"plurks"];
 //	if ([messages count]) {
 //		NSDictionary *message = [messages objectAtIndex:0];
@@ -61,7 +62,7 @@
 //	}
 //	[plurk retrieveMessagesWithOffset:[NSDate dateWithTimeIntervalSinceNow:-(60 * 60)] limit:1 user:nil isResponded:NO isPrivate:NO delegate:self];
 //	[plurk retrieveMessagesWithOffset:[NSDate date] limit:1 user:nil isResponded:NO isPrivate:NO delegate:self];
-	[plurk retrieveUnreadMessagesWithOffset:[NSDate date] limit:10 delegate:self];
+//	[plurk retrieveUnreadMessagesWithOffset:[NSDate date] limit:10 delegate:self];
 }
 - (void)plurk:(ObjectivePlurk *)plurk didFailLoggingIn:(NSError *)error
 {

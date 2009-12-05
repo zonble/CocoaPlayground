@@ -10,4 +10,9 @@
 
 @interface ObjectivePlurk(PrivateMethods)
 
+- (void)loginDidSuccess:(NSDictionary *)sessionInfo;
+- (void)loginDidFail:(NSError *)error;
+- (void)commonAPIDidSuccess:(NSDictionary *)sessionInfo;
+- (void)commonAPIDidFail:(NSError *)error;
+
 @end

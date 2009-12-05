@@ -8,6 +8,8 @@
 
 #import "ObjectivePlurk+PrivateMethods.h"
 
+NSString *ObjectivePlurkErrorDomain = @"ObjectivePlurkErrorDomain";
+
 NSString *OPLoginAction = @"OPLoginAction";
 NSString *OPRetriveMessageAction = @"OPRetriveMessageAction";
 NSString *OPRetriveMessagesAction = @"OPRetriveMessagesAction";
@@ -23,8 +25,18 @@ NSString *OPEditMessageAction = @"OPEditMessageAction";
 
 - (void)loginDidSuccess:(NSDictionary *)sessionInfo
 {
-	id delegate = [sessionInfo valueForKey:@"delegate"];
 	NSDictionary *result = [sessionInfo valueForKey:@"result"];	
+	
+	if ([result valueForKey:@"error_text"]) {
+		NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+		[dictionary setValue:sessionInfo forKey:@"sessionInfo"];
+		[dictionary setValue:[result valueForKey:@"error_text"] forKey:NSLocalizedDescriptionKey];
+		NSError *error = [NSError errorWithDomain:ObjectivePlurkErrorDomain code:0 userInfo:dictionary];
+		[self loginDidFail:error];		
+		return;
+	}	
+	
+	id delegate = [sessionInfo valueForKey:@"delegate"];
 	if ([result valueForKey:@"user_info"]) {
 		NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:result];
 		[userInfo removeObjectForKey:@"plurks"];
@@ -39,10 +51,10 @@ NSString *OPEditMessageAction = @"OPEditMessageAction";
 	}
 }
 
-- (void)loginDidFail:(NSDictionary *)sessionInfo
+- (void)loginDidFail:(NSError *)error
 {
+	NSDictionary *sessionInfo = [[error userInfo] valueForKey:@"sessionInfo"];
 	id delegate = [sessionInfo valueForKey:@"delegate"];
-	NSError *error = [sessionInfo valueForKey:@"error"];
 	if ([delegate respondsToSelector:@selector(plurk:didFailLoggingIn:)]) {
 		[delegate plurk:self didFailLoggingIn:error];
 	}	
@@ -50,9 +62,20 @@ NSString *OPEditMessageAction = @"OPEditMessageAction";
 
 - (void)commonAPIDidSuccess:(NSDictionary *)sessionInfo
 {
-	id delegate = [sessionInfo valueForKey:@"delegate"];
 	NSDictionary *result = [sessionInfo valueForKey:@"result"];	
+	
+	if ([result valueForKey:@"error_text"]) {
+		NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+		[dictionary setValue:sessionInfo forKey:@"sessionInfo"];
+		[dictionary setValue:[result valueForKey:@"error_text"] forKey:NSLocalizedDescriptionKey];
+		NSError *error = [NSError errorWithDomain:ObjectivePlurkErrorDomain code:0 userInfo:dictionary];
+		[self commonAPIDidFail:error];
+		return;
+	}
+	
+	id delegate = [sessionInfo valueForKey:@"delegate"];	
 	NSString *actionName = [sessionInfo valueForKey:@"actionName"];	
+
 	if ([actionName isEqualToString:OPRetriveMessageAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didRetrieveMessage:)]) {
 			[delegate plurk:self didRetrieveMessage:result];
@@ -101,10 +124,11 @@ NSString *OPEditMessageAction = @"OPEditMessageAction";
 
 }
 
-- (void)commonAPIDidFail:(NSDictionary *)sessionInfo
+- (void)commonAPIDidFail:(NSError *)error
 {
+	NSDictionary *sessionInfo = [[error userInfo] valueForKey:@"sessionInfo"];
 	id delegate = [sessionInfo valueForKey:@"delegate"];
-	NSError *error = [sessionInfo valueForKey:@"error"];
+
 	NSString *actionName = [sessionInfo valueForKey:@"actionName"];
 	
 	if ([actionName isEqualToString:OPRetriveMessageAction]) {
@@ -166,8 +190,6 @@ NSString *OPEditMessageAction = @"OPEditMessageAction";
 
 - (void)connectionDidFinishLoading:(OPURLConnection *)connection
 {
-//	NSLog(@"%s", __PRETTY_FUNCTION__);
-//	NSString *s = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
 	NSString *s = connection.receivedString;
 	NSDictionary *result = [NSDictionary dictionaryWithJSONString:s];
 	NSDictionary *sessionInfo = [connection sessionInfo];
@@ -182,14 +204,12 @@ NSString *OPEditMessageAction = @"OPEditMessageAction";
 
 - (void)connection:(OPURLConnection *)connection didFailWithError:(NSError *)error
 {
-//	NSLog(@"%s", __PRETTY_FUNCTION__);
-//	NSLog(@"error:%@", [error description]);
-	
 	NSDictionary *sessionInfo = [connection sessionInfo];
-	NSMutableDictionary *sessionInfoWithError = [NSMutableDictionary dictionaryWithDictionary:sessionInfo];
-	[sessionInfoWithError setValue:error forKey:@"error"];
+	NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithDictionary:[error userInfo]];
+	[dictionary setValue:sessionInfo forKey:@"sessionInfo"];
+	NSError *newError = [NSError errorWithDomain:[error domain] code:[error code] userInfo:dictionary];
 	SEL action = NSSelectorFromString([sessionInfo valueForKey:@"failAction"]);
-	[self performSelector:action withObject:sessionInfoWithError];
+	[self performSelector:action withObject:newError];
 	
 	self.currentConnection = nil;
 	[self runQueue];

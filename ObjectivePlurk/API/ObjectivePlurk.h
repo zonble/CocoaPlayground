@@ -56,8 +56,16 @@
 typedef enum {
 	OPEveryOneCanComment = 0,
 	OPNoOneCanComment = 1,
-	OPOnlyFriendsCanComment = 1
+	OPOnlyFriendsCanComment = 2
 } OPCanComment;
+
+typedef enum {
+	OPSmallUserProfileImageSize = 0,
+	OPMediumUserProfileImageSize = 1,
+	OPBigUserProfileImageSize = 2
+} OPUserProfileImageSize;
+
+extern NSString *ObjectivePlurkErrorDomain;
 
 extern NSString *OPLoginAction;
 extern NSString *OPRetriveMessageAction;
@@ -86,6 +94,8 @@ extern NSString *OPEditMessageAction;
 - (void)cancelAllRequest;
 - (void)cancelAllRequestWithDelegate:(id)delegate;
 - (void)runQueue;
+
+- (NSString *)imageURLStringForUser:(id)identifier size:(OPUserProfileImageSize)size hasProfileImage:(BOOL)hasProfileImage avatar:(NSString *)avatar;
 
 #pragma mark Users
 
