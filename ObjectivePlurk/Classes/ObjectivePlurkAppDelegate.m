@@ -49,10 +49,24 @@
 
 - (void)plurk:(ObjectivePlurk *)plurk didLoggedIn:(NSDictionary *)result
 {
-	NSLog(@"result:%@", [result description]);
+//	NSLog(@"result:%@", [result description]);
+	NSLog(@"%s", __PRETTY_FUNCTION__);
+	[plurk addMessageWithContent:@"This is a test for testing the Objective-C API" qualifier:@"says" canComment:OPEveryOneCanComment lang:@"en" limitToUsers:[NSArray array] delegate:self];
 }
 - (void)plurk:(ObjectivePlurk *)plurk didFailLoggingIn:(NSError *)error
 {
+	NSLog(@"error:%@", [error description]);
+}
+
+
+- (void)plurk:(ObjectivePlurk *)plurk didAddMessage:(NSDictionary *)result
+{
+	NSLog(@"%s", __PRETTY_FUNCTION__);
+	NSLog(@"result:%@", [result description]);
+}
+- (void)plurk:(ObjectivePlurk *)plurk didFailAddingMessage:(NSError *)error
+{
+	NSLog(@"%s", __PRETTY_FUNCTION__);
 	NSLog(@"error:%@", [error description]);
 }
 

@@ -9,10 +9,11 @@
 #import "ObjectivePlurk.h"
 #import "PlurkAPI.h"
 
-#define API_URL @"https://www.plurk.com/API"
+#define API_URL @"https://www.plurk.com"
 #define U8(x) [NSString stringWithUTF8String:x]
 
 static NSString *loginAction = @"login";
+static NSString *addMessageAction = @"AddMessage";
 
 static ObjectivePlurk *sharedInstance;
 
@@ -28,8 +29,8 @@ static ObjectivePlurk *sharedInstance;
 
 - (void)dealloc
 {
-	[_request release];
-	_request = nil;
+//	[_request release];
+//	_request = nil;
 	[_queue release];
 	[_currentUserInfo release];
 	[_qualifiers release];
@@ -41,8 +42,8 @@ static ObjectivePlurk *sharedInstance;
 {
 	self = [super init];
 	if (self != nil) {
-		_request = [[LFHTTPRequest alloc] init];
-		[_request setDelegate:self];
+//		_request = [[LFHTTPRequest alloc] init];
+//		[_request setDelegate:self];
 		_queue = [[NSMutableArray alloc] init];
 		_currentUserInfo = nil;
 		_qualifiers = [[NSArray alloc] initWithObjects:@"loves", @"likes", @"shares", @"gives", @"hates", @"wants", @"has", @"will", @"asks", @"wishes", @"was", @"feels", @"thinks", @"says", @"is", @":", @"freestyle", @"hopes", @"needs", @"wonders", nil];
@@ -71,7 +72,11 @@ static ObjectivePlurk *sharedInstance;
 
 - (void)cancelAllRequest
 {
-	[_request cancelWithoutDelegateMessage];
+//	[_request cancelWithoutDelegateMessage];
+	if (self.currentConnection) {
+		[self.currentConnection cancel];
+		self.currentConnection = nil;
+	}
 	[_queue removeAllObjects];
 }
 - (void)cancelAllRequestWithDelegate:(id)delegate
@@ -88,11 +93,15 @@ static ObjectivePlurk *sharedInstance;
 			[_queue removeObject:sessionInfo];
 		}
 	}
-	if ([_request isRunning]) {
-		id sessionInfo = [_request sessionInfo];
+//	if ([_request isRunning]) {
+	if (_connection) {
+//		id sessionInfo = [_request sessionInfo];
+		id sessionInfo = [_connection sessionInfo];
 		id theDelegate = [sessionInfo objectForKey:@"delegate"];
 		if (theDelegate == delegate) {
-			[_request cancelWithoutDelegateMessage];
+//			[_request cancelWithoutDelegateMessage];
+			[_connection cancel];
+			self.currentConnection = nil;
 			[self runQueue];
 		}
 	}
@@ -102,8 +111,16 @@ static ObjectivePlurk *sharedInstance;
 	if ([_queue count]) {
 		id sessionInfo = [_queue objectAtIndex:0];
 		NSURL *URL = [sessionInfo objectForKey:@"URL"];
-		[_request setSessionInfo:sessionInfo];
-		[_request performMethod:LFHTTPRequestGETMethod onURL:URL withData:nil];
+				
+//		[_request setSessionInfo:sessionInfo];
+//		[_request performMethod:LFHTTPRequestGETMethod onURL:URL withData:nil];
+		
+		NSURLRequest *request =  [NSURLRequest requestWithURL:URL];
+		OPURLConnection *connection = [[[OPURLConnection alloc] initWithRequest:request delegate:self] autorelease];
+		self.currentConnection = connection;
+		connection.sessionInfo = sessionInfo;
+		[connection start];
+		
 		[_queue removeObject:sessionInfo];		
 	}
 }
@@ -116,10 +133,18 @@ static ObjectivePlurk *sharedInstance;
 	NSURL *URL = [NSURL URLWithString:URLString];
 	NSDictionary *sessionInfo = [NSDictionary dictionaryWithObjectsAndKeys:actionName, @"actionName", NSStringFromSelector(successAction), @"successAction", NSStringFromSelector(failAction), @"failAction", URL, @"URL", delegate, @"delegate", nil];
 	
-	if (![_queue count] && ![_request isRunning]) {
-		[_request setSessionInfo:sessionInfo];
-		[_request performMethod:LFHTTPRequestGETMethod onURL:URL withData:nil];
+//	if (![_queue count] && ![_request isRunning]) {
+//		[_request setSessionInfo:sessionInfo];
+//		[_request performMethod:LFHTTPRequestGETMethod onURL:URL withData:nil];
+//	}
+	if (![_queue count] && !self.currentConnection) {
+		NSURLRequest *request =  [NSURLRequest requestWithURL:URL];
+		OPURLConnection *connection = [[[OPURLConnection alloc] initWithRequest:request delegate:self] autorelease];
+		self.currentConnection = connection;
+		connection.sessionInfo = sessionInfo;
+		[connection start];
 	}
+	
 	else {
 		if ([_queue count]) {
 			[_queue insertObject:sessionInfo atIndex:0];
@@ -133,8 +158,19 @@ static ObjectivePlurk *sharedInstance;
 - (void)loginWithUsername:(NSString *)username password:(NSString *)password delegate:(id)delegate
 {
 	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:username, @"username", password, @"password", nil];
-	[self addRequestWithURLPath:@"/Users/login" arguments:args actionName:loginAction successAction:@selector(loginDidSuccess:) failAction:@selector(loginDidFail:) delegate:delegate];
+	[self addRequestWithURLPath:@"/API/Users/login" arguments:args actionName:loginAction successAction:@selector(loginDidSuccess:) failAction:@selector(loginDidFail:) delegate:delegate];
 }
+
+- (void)addMessageWithContent:(NSString *)content qualifier:(NSString *)qualifier canComment:(OPCanComment)canComment lang:(NSString *)lang limitToUsers:(NSArray *)users delegate:(id)delegate
+{
+	NSString *limitString = @"";
+	if ([users count]) {
+		limitString = [users jsonStringValue];
+	}
+	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:content, @"content", qualifier, @"qualifier", [[NSNumber numberWithInt:canComment] stringValue], @"no_comments", lang, @"lang", limitString, @"limited_to", nil];
+	[self addRequestWithURLPath:@"/API/Timeline/plurkAdd" arguments:args actionName:addMessageAction successAction:@selector(commonAPIDidSuccess:) failAction:@selector(commonAPIDidFail:) delegate:delegate];
+}
+
 
 - (void)loginDidSuccess:(NSDictionary *)sessionInfo
 {
@@ -148,7 +184,6 @@ static ObjectivePlurk *sharedInstance;
 	}
 	
 	if ([delegate respondsToSelector:@selector(plurk:didLoggedIn:)]) {
-
 		[delegate plurk:self didLoggedIn:result];
 	}
 }
@@ -156,50 +191,108 @@ static ObjectivePlurk *sharedInstance;
 - (void)loginDidFail:(NSDictionary *)sessionInfo
 {
 	id delegate = [sessionInfo valueForKey:@"delegate"];
+	NSError *error = [sessionInfo valueForKey:@"error"];
 	if ([delegate respondsToSelector:@selector(plurk:didFailLoggingIn:)]) {
-		NSError *error = [sessionInfo valueForKey:@"error"];
 		[delegate plurk:self didFailLoggingIn:error];
 	}	
 }
 
-- (void)setShouldWaitUntilDone:(BOOL)flag
+- (void)commonAPIDidSuccess:(NSDictionary *)sessionInfo
 {
-	[_request setShouldWaitUntilDone:flag];
-}
-- (BOOL)shouldWaitUntilDone
-{
-	return [_request shouldWaitUntilDone];
+	id delegate = [sessionInfo valueForKey:@"delegate"];
+	NSDictionary *result = [sessionInfo valueForKey:@"result"];	
+	NSString *actionName = [sessionInfo valueForKey:@"actionName"];	
+	if ([actionName isEqualToString:addMessageAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didLoggedIn:)]) {
+			[delegate plurk:self didAddMessage:result];
+		}
+	}
+	
 }
 
-- (void)httpRequestDidComplete:(LFHTTPRequest *)request
+- (void)commonAPIDidFail:(NSDictionary *)sessionInfo
+{
+	id delegate = [sessionInfo valueForKey:@"delegate"];
+	NSError *error = [sessionInfo valueForKey:@"error"];
+	NSString *actionName = [sessionInfo valueForKey:@"actionName"];
+	if ([actionName isEqualToString:addMessageAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailAddingMessage:)]) {
+			[delegate plurk:self didFailAddingMessage:error];
+		}	
+	}
+}
+
+//- (void)setShouldWaitUntilDone:(BOOL)flag
+//{
+//	[_request setShouldWaitUntilDone:flag];
+//}
+//- (BOOL)shouldWaitUntilDone
+//{
+//	return [_request shouldWaitUntilDone];
+//}
+
+- (void)connection:(OPURLConnection *)connection didReceiveData:(NSData *)data
 {
 	NSLog(@"%s", __PRETTY_FUNCTION__);
-	NSString *s = [[[NSString alloc] initWithData:[request receivedData] encoding:NSUTF8StringEncoding] autorelease];
+	NSString *s = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
 	NSDictionary *result = [NSDictionary dictionaryWithJSONString:s];
-	NSDictionary *sessionInfo = [request sessionInfo];
+	NSDictionary *sessionInfo = [connection sessionInfo];
 	NSMutableDictionary *sessionInfoWithResult = [NSMutableDictionary dictionaryWithDictionary:sessionInfo];
 	[sessionInfoWithResult setValue:result forKey:@"result"];
 	SEL action = NSSelectorFromString([sessionInfo valueForKey:@"successAction"]);
-	[self performSelector:action withObject:sessionInfoWithResult];
+	[self performSelector:action withObject:sessionInfoWithResult];	
+	
+	self.currentConnection = nil;
+	[self runQueue];
 }
-- (void)httpRequestDidCancel:(LFHTTPRequest *)request
-{
-	NSLog(@"%s", __PRETTY_FUNCTION__);
-}
-- (void)httpRequest:(LFHTTPRequest *)request didFailWithError:(NSString *)error
+
+- (void)connection:(OPURLConnection *)connection didFailWithError:(NSError *)error
 {
 	NSLog(@"%s", __PRETTY_FUNCTION__);
 	NSLog(@"error:%@", [error description]);
 
-	NSDictionary *sessionInfo = [request sessionInfo];
+	NSDictionary *sessionInfo = [connection sessionInfo];
 	NSMutableDictionary *sessionInfoWithError = [NSMutableDictionary dictionaryWithDictionary:sessionInfo];
 	[sessionInfoWithError setValue:error forKey:@"error"];
 	SEL action = NSSelectorFromString([sessionInfo valueForKey:@"failAction"]);
-	[self performSelector:action withObject:sessionInfoWithError];	
+	[self performSelector:action withObject:sessionInfoWithError];
+	
+	self.currentConnection = nil;
+	[self runQueue];
 }
+
+
+//- (void)httpRequestDidComplete:(LFHTTPRequest *)request
+//{
+//	NSLog(@"%s", __PRETTY_FUNCTION__);
+//	NSLog(@"requestHeader:%@", [[request requestHeader] description]);
+//	NSString *s = [[[NSString alloc] initWithData:[request receivedData] encoding:NSUTF8StringEncoding] autorelease];
+//	NSDictionary *result = [NSDictionary dictionaryWithJSONString:s];
+//	NSDictionary *sessionInfo = [request sessionInfo];
+//	NSMutableDictionary *sessionInfoWithResult = [NSMutableDictionary dictionaryWithDictionary:sessionInfo];
+//	[sessionInfoWithResult setValue:result forKey:@"result"];
+//	SEL action = NSSelectorFromString([sessionInfo valueForKey:@"successAction"]);
+//	[self performSelector:action withObject:sessionInfoWithResult];
+//}
+//- (void)httpRequestDidCancel:(LFHTTPRequest *)request
+//{
+//	NSLog(@"%s", __PRETTY_FUNCTION__);
+//}
+//- (void)httpRequest:(LFHTTPRequest *)request didFailWithError:(NSString *)error
+//{
+//	NSLog(@"%s", __PRETTY_FUNCTION__);
+//	NSLog(@"error:%@", [error description]);
+//
+//	NSDictionary *sessionInfo = [request sessionInfo];
+//	NSMutableDictionary *sessionInfoWithError = [NSMutableDictionary dictionaryWithDictionary:sessionInfo];
+//	[sessionInfoWithError setValue:error forKey:@"error"];
+//	SEL action = NSSelectorFromString([sessionInfo valueForKey:@"failAction"]);
+//	[self performSelector:action withObject:sessionInfoWithError];	
+//}
 
 @synthesize qualifiers = _qualifiers;
 @synthesize langCodes = _langCodes;
 @synthesize currentUserInfo = _currentUserInfo;
+@synthesize currentConnection = _connection;
 
 @end
