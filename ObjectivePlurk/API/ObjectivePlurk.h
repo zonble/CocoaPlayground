@@ -44,6 +44,13 @@
 - (void)plurk:(ObjectivePlurk *)plurk didAddMessage:(NSDictionary *)result;
 - (void)plurk:(ObjectivePlurk *)plurk didFailAddingMessage:(NSError *)error;
 
+- (void)plurk:(ObjectivePlurk *)plurk didDeleteMessage:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailDeletingMessage:(NSError *)error;
+
+- (void)plurk:(ObjectivePlurk *)plurk didEditMessage:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailEditingMessage:(NSError *)error;
+
+
 @end
 
 typedef enum {
@@ -52,23 +59,25 @@ typedef enum {
 	OPOnlyFriendsCanComment = 1
 } OPCanComment;
 
-extern NSString *loginAction;
-extern NSString *retriveMessageAction;
-extern NSString *retriveMessagesAction;
-extern NSString *retriveUnreadMessagesAction;
-extern NSString *muteMessagesAction;
-extern NSString *unmuteMessagesAction;
-extern NSString *markMessageAsReadAction;
-extern NSString *addMessageAction;
+extern NSString *OPLoginAction;
+extern NSString *OPRetriveMessageAction;
+extern NSString *OPRetriveMessagesAction;
+extern NSString *OPRetriveUnreadMessagesAction;
+extern NSString *OPMuteMessagesAction;
+extern NSString *OPUnmuteMessagesAction;
+extern NSString *OPMarkMessageAsReadAction;
+extern NSString *OPAddMessageAction;
+extern NSString *OPDeleteMessageAction;
+extern NSString *OPEditMessageAction;
 
 @interface ObjectivePlurk : NSObject
 {
 //	LFHTTPRequest *_request;
-	OPURLConnection *_connection;
 	NSMutableArray *_queue;
-	NSDictionary *_currentUserInfo;
 	NSArray *_qualifiers;
 	NSDictionary *_langCodes;
+	OPURLConnection *_connection;
+	NSDictionary *_currentUserInfo;
 	NSDateFormatter *_dateFormatter;
 	BOOL _isLoggedIn;
 }
@@ -90,12 +99,14 @@ extern NSString *addMessageAction;
 - (void)muteMessagesWithIdentifiers:(NSArray *)identifiers delegate:(id)delegate;
 - (void)unmuteMessagesWithIdentifiers:(NSArray *)identifiers delegate:(id)delegate;
 - (void)markMessagesAsReadWithIdentifiers:(NSArray *)identifiers delegate:(id)delegate;
-
 - (void)addMessageWithContent:(NSString *)content qualifier:(NSString *)qualifier canComment:(OPCanComment)canComment lang:(NSString *)lang limitToUsers:(NSArray *)users delegate:(id)delegate;
 
-@property (assign) BOOL isLoggedIn;
+- (void)deleteMessageWithIdentifier:(NSString *)identifer delegate:(id)delegate;
+- (void)editMessageWithIdentifier:(NSString *)identifer content:(NSString *)content delegate:(id)delegate;
+
 @property (readonly) NSArray *qualifiers;
 @property (readonly) NSDictionary *langCodes;
+@property (assign) BOOL isLoggedIn;
 @property (copy, nonatomic) NSDictionary *currentUserInfo;
 @property (retain) OPURLConnection *currentConnection;
 

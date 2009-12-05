@@ -166,7 +166,7 @@ static ObjectivePlurk *sharedInstance;
 - (void)loginWithUsername:(NSString *)username password:(NSString *)password delegate:(id)delegate
 {
 	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:username, @"username", password, @"password", nil];
-	[self addRequestWithURLPath:@"/API/Users/login" arguments:args actionName:loginAction successAction:@selector(loginDidSuccess:) failAction:@selector(loginDidFail:) delegate:delegate];
+	[self addRequestWithURLPath:@"/API/Users/login" arguments:args actionName:OPLoginAction successAction:@selector(loginDidSuccess:) failAction:@selector(loginDidFail:) delegate:delegate];
 }
 
 #pragma mark Timeline
@@ -178,7 +178,7 @@ static ObjectivePlurk *sharedInstance;
 	}
 	
 	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:identifer, @"plurk_id", nil];
-	[self addRequestWithURLPath:@"/API/Timeline/getPlurk" arguments:args actionName:retriveMessageAction successAction:@selector(commonAPIDidSuccess:) failAction:@selector(commonAPIDidFail:) delegate:delegate];
+	[self addRequestWithURLPath:@"/API/Timeline/getPlurk" arguments:args actionName:OPRetriveMessageAction successAction:@selector(commonAPIDidSuccess:) failAction:@selector(commonAPIDidFail:) delegate:delegate];
 }
 
 - (void)retrieveMessagesWithOffset:(NSDate *)offsetDate limit:(NSInteger)limit user:(NSString *)userID isResponded:(BOOL)isResponded isPrivate:(BOOL)isPrivate delegate:(id)delegate
@@ -201,7 +201,7 @@ static ObjectivePlurk *sharedInstance;
 	if (isPrivate) {
 		[args setValue:@"true" forKey:@"only_private"];
 	}
-	[self addRequestWithURLPath:@"/API/Timeline/getPlurks" arguments:args actionName:retriveMessagesAction successAction:@selector(commonAPIDidSuccess:) failAction:@selector(commonAPIDidFail:) delegate:delegate];
+	[self addRequestWithURLPath:@"/API/Timeline/getPlurks" arguments:args actionName:OPRetriveMessagesAction successAction:@selector(commonAPIDidSuccess:) failAction:@selector(commonAPIDidFail:) delegate:delegate];
 	
 }
 
@@ -215,28 +215,27 @@ static ObjectivePlurk *sharedInstance;
 	if (limit) {
 		[args setValue:[[NSNumber numberWithInt:limit] stringValue] forKey:@"limit"];
 	}
-	[self addRequestWithURLPath:@"/API/Timeline/getUnreadPlurks" arguments:args actionName:retriveUnreadMessagesAction successAction:@selector(commonAPIDidSuccess:) failAction:@selector(commonAPIDidFail:) delegate:delegate];
+	[self addRequestWithURLPath:@"/API/Timeline/getUnreadPlurks" arguments:args actionName:OPRetriveUnreadMessagesAction successAction:@selector(commonAPIDidSuccess:) failAction:@selector(commonAPIDidFail:) delegate:delegate];
 
 }
 
 - (void)muteMessagesWithIdentifiers:(NSArray *)identifiers delegate:(id)delegate
 {
 	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:[identifiers jsonStringValue], @"ids", nil];
-	[self addRequestWithURLPath:@"/API/Timeline/mutePlurks" arguments:args actionName:muteMessagesAction successAction:@selector(loginDidSuccess:) failAction:@selector(loginDidFail:) delegate:delegate];
+	[self addRequestWithURLPath:@"/API/Timeline/mutePlurks" arguments:args actionName:OPMuteMessagesAction successAction:@selector(loginDidSuccess:) failAction:@selector(loginDidFail:) delegate:delegate];
 }
 
 - (void)unmuteMessagesWithIdentifiers:(NSArray *)identifiers delegate:(id)delegate
 {
 	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:[identifiers jsonStringValue], @"ids", nil];
-	[self addRequestWithURLPath:@"/API/Timeline/unmutePlurks" arguments:args actionName:unmuteMessagesAction successAction:@selector(loginDidSuccess:) failAction:@selector(loginDidFail:) delegate:delegate];
+	[self addRequestWithURLPath:@"/API/Timeline/unmutePlurks" arguments:args actionName:OPUnmuteMessagesAction successAction:@selector(loginDidSuccess:) failAction:@selector(loginDidFail:) delegate:delegate];
 }
 
 - (void)markMessagesAsReadWithIdentifiers:(NSArray *)identifiers delegate:(id)delegate
 {
 	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:[identifiers jsonStringValue], @"ids", nil];
-	[self addRequestWithURLPath:@"/API/Timeline/markAsRead" arguments:args actionName:markMessageAsReadAction successAction:@selector(loginDidSuccess:) failAction:@selector(loginDidFail:) delegate:delegate];
+	[self addRequestWithURLPath:@"/API/Timeline/markAsRead" arguments:args actionName:OPMarkMessageAsReadAction successAction:@selector(loginDidSuccess:) failAction:@selector(loginDidFail:) delegate:delegate];
 }
-
 
 - (void)addMessageWithContent:(NSString *)content qualifier:(NSString *)qualifier canComment:(OPCanComment)canComment lang:(NSString *)lang limitToUsers:(NSArray *)users delegate:(id)delegate
 {
@@ -245,8 +244,28 @@ static ObjectivePlurk *sharedInstance;
 		limitString = [users jsonStringValue];
 	}
 	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:content, @"content", qualifier, @"qualifier", [[NSNumber numberWithInt:canComment] stringValue], @"no_comments", lang, @"lang", limitString, @"limited_to", nil];
-	[self addRequestWithURLPath:@"/API/Timeline/plurkAdd" arguments:args actionName:addMessageAction successAction:@selector(commonAPIDidSuccess:) failAction:@selector(commonAPIDidFail:) delegate:delegate];
+	[self addRequestWithURLPath:@"/API/Timeline/plurkAdd" arguments:args actionName:OPAddMessageAction successAction:@selector(commonAPIDidSuccess:) failAction:@selector(commonAPIDidFail:) delegate:delegate];
 }
+
+- (void)deleteMessageWithIdentifier:(NSString *)identifer delegate:(id)delegate
+{
+	if ([identifer isKindOfClass:[NSNumber class]]) {
+		identifer = [(NSNumber *)identifer stringValue];
+	}
+	
+	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:identifer, @"plurk_id", nil];
+	[self addRequestWithURLPath:@"/API/Timeline/plurkDelete" arguments:args actionName:OPDeleteMessageAction successAction:@selector(commonAPIDidSuccess:) failAction:@selector(commonAPIDidFail:) delegate:delegate];	
+}
+- (void)editMessageWithIdentifier:(NSString *)identifer content:(NSString *)content delegate:(id)delegate
+{
+	if ([identifer isKindOfClass:[NSNumber class]]) {
+		identifer = [(NSNumber *)identifer stringValue];
+	}
+	
+	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:identifer, @"plurk_id", content, @"content", nil];
+	[self addRequestWithURLPath:@"/API/Timeline/plurkEdit" arguments:args actionName:OPEditMessageAction successAction:@selector(commonAPIDidSuccess:) failAction:@selector(commonAPIDidFail:) delegate:delegate];		
+}
+
 
 
 @synthesize isLoggedIn = _isLoggedIn;

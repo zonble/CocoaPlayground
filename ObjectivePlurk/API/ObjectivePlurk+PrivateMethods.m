@@ -8,14 +8,16 @@
 
 #import "ObjectivePlurk+PrivateMethods.h"
 
-NSString *loginAction = @"login";
-NSString *retriveMessageAction = @"retriveMessageAction";
-NSString *retriveMessagesAction = @"retriveMessagesAction";
-NSString *retriveUnreadMessagesAction = @"retriveUnreadMessagesAction";
-NSString *muteMessagesAction = @"muteMessagesAction";
-NSString *unmuteMessagesAction = @"unmuteMessagesAction";
-NSString *markMessageAsReadAction = @"markMessageAsReadAction";
-NSString *addMessageAction = @"AddMessage";
+NSString *OPLoginAction = @"OPLoginAction";
+NSString *OPRetriveMessageAction = @"OPRetriveMessageAction";
+NSString *OPRetriveMessagesAction = @"OPRetriveMessagesAction";
+NSString *OPRetriveUnreadMessagesAction = @"OPRetriveUnreadMessagesAction";
+NSString *OPMuteMessagesAction = @"OPMuteMessagesAction";
+NSString *OPUnmuteMessagesAction = @"OPUnmuteMessagesAction";
+NSString *OPMarkMessageAsReadAction = @"OPMarkMessageAsReadAction";
+NSString *OPAddMessageAction = @"OPAddMessageAction";
+NSString *OPDeleteMessageAction = @"OPDeleteMessageAction";
+NSString *OPEditMessageAction = @"OPEditMessageAction";
 
 @implementation ObjectivePlurk(PrivateMethods)
 
@@ -51,42 +53,52 @@ NSString *addMessageAction = @"AddMessage";
 	id delegate = [sessionInfo valueForKey:@"delegate"];
 	NSDictionary *result = [sessionInfo valueForKey:@"result"];	
 	NSString *actionName = [sessionInfo valueForKey:@"actionName"];	
-	if ([actionName isEqualToString:retriveMessageAction]) {
+	if ([actionName isEqualToString:OPRetriveMessageAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didRetrieveMessage:)]) {
 			[delegate plurk:self didRetrieveMessage:result];
 		}
 	}	
-	else if ([actionName isEqualToString:retriveMessagesAction]) {
+	else if ([actionName isEqualToString:OPRetriveMessagesAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didRetrieveMessages:)]) {
 			[delegate plurk:self didRetrieveMessages:result];
 		}
 	}
-	else if ([actionName isEqualToString:retriveUnreadMessagesAction]) {
+	else if ([actionName isEqualToString:OPRetriveUnreadMessagesAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didRetrieveUnreadMessages:)]) {
 			[delegate plurk:self didRetrieveUnreadMessages:result];
 		}
 	}
-	else if ([actionName isEqualToString:muteMessagesAction]) {
+	else if ([actionName isEqualToString:OPMuteMessagesAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didMuteMessages:)]) {
 			[delegate plurk:self didMuteMessages:result];
 		}
 	}
-	else if ([actionName isEqualToString:unmuteMessagesAction]) {
+	else if ([actionName isEqualToString:OPUnmuteMessagesAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didUnmuteMessages:)]) {
 			[delegate plurk:self didUnmuteMessages:result];
 		}
 	}
-	else if ([actionName isEqualToString:markMessageAsReadAction]) {
+	else if ([actionName isEqualToString:OPMarkMessageAsReadAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didMarkMessagesAsRead:)]) {
 			[delegate plurk:self didMarkMessagesAsRead:result];
 		}
 	}
-	else if ([actionName isEqualToString:addMessageAction]) {
+	else if ([actionName isEqualToString:OPAddMessageAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didLoggedIn:)]) {
 			[delegate plurk:self didAddMessage:result];
 		}
 	}
-	
+	else if ([actionName isEqualToString:OPDeleteMessageAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didDeleteMessage:)]) {
+			[delegate plurk:self didDeleteMessage:result];
+		}
+	}
+	else if ([actionName isEqualToString:OPDeleteMessageAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didEditMessage:)]) {
+			[delegate plurk:self didEditMessage:result];
+		}
+	}
+
 }
 
 - (void)commonAPIDidFail:(NSDictionary *)sessionInfo
@@ -95,53 +107,56 @@ NSString *addMessageAction = @"AddMessage";
 	NSError *error = [sessionInfo valueForKey:@"error"];
 	NSString *actionName = [sessionInfo valueForKey:@"actionName"];
 	
-	if ([actionName isEqualToString:retriveMessageAction]) {
+	if ([actionName isEqualToString:OPRetriveMessageAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didFailRetrievingMessage:)]) {
 			[delegate plurk:self didFailRetrievingMessage:error];
 		}
 	}	
-	else if ([actionName isEqualToString:retriveMessagesAction]) {
+	else if ([actionName isEqualToString:OPRetriveMessagesAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didFailRetrievingMessages:)]) {
 			[delegate plurk:self didFailRetrievingMessages:error];
 		}
 	}
-	else if ([actionName isEqualToString:retriveUnreadMessagesAction]) {
+	else if ([actionName isEqualToString:OPRetriveUnreadMessagesAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didFailRetrievingUnreadMessages:)]) {
 			[delegate plurk:self didFailRetrievingUnreadMessages:error];
 		}
 	}
-	else if ([actionName isEqualToString:muteMessagesAction]) {
+	else if ([actionName isEqualToString:OPMuteMessagesAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didFailMutingMessages:)]) {
 			[delegate plurk:self didFailMutingMessages:error];
 		}
 	}
-	else if ([actionName isEqualToString:unmuteMessagesAction]) {
+	else if ([actionName isEqualToString:OPUnmuteMessagesAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didFailUnmutingMessages:)]) {
 			[delegate plurk:self didFailUnmutingMessages:error];
 		}
 	}
-	else if ([actionName isEqualToString:markMessageAsReadAction]) {
+	else if ([actionName isEqualToString:OPMarkMessageAsReadAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didFailMarkingMessagesAsRead:)]) {
 			[delegate plurk:self didFailMarkingMessagesAsRead:error];
 		}
 	}
-	else if ([actionName isEqualToString:addMessageAction]) {
+	else if ([actionName isEqualToString:OPAddMessageAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didFailAddingMessage:)]) {
 			[delegate plurk:self didFailAddingMessage:error];
+		}	
+	}
+	else if ([actionName isEqualToString:OPDeleteMessageAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailDeletingMessage:)]) {
+			[delegate plurk:self didFailDeletingMessage:error];
+		}	
+	}
+	else if ([actionName isEqualToString:OPEditMessageAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailEditingMessage:)]) {
+			[delegate plurk:self didFailEditingMessage:error];
 		}	
 	}
 	
 	
 }
 
-//- (void)setShouldWaitUntilDone:(BOOL)flag
-//{
-//	[_request setShouldWaitUntilDone:flag];
-//}
-//- (BOOL)shouldWaitUntilDone
-//{
-//	return [_request shouldWaitUntilDone];
-//}
+#pragma mark NSURLConnection delegate methods
 
 - (void)connection:(OPURLConnection *)connection didReceiveData:(NSData *)data
 {
@@ -210,3 +225,4 @@ NSString *addMessageAction = @"AddMessage";
 //}
 
 @end
+
