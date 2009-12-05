@@ -12,8 +12,11 @@
 #define API_URL @"https://www.plurk.com"
 #define U8(x) [NSString stringWithUTF8String:x]
 
-static NSString *loginAction = @"login";
-static NSString *addMessageAction = @"AddMessage";
+NSString *loginAction = @"login";
+NSString *retriveMessageAction = @"retriveMessageAction";
+NSString *retriveMessagesAction = @"retriveMessagesAction";
+NSString *retriveUnreadMessagesAction = @"retriveUnreadMessagesAction";
+NSString *addMessageAction = @"AddMessage";
 
 static ObjectivePlurk *sharedInstance;
 
@@ -31,10 +34,15 @@ static ObjectivePlurk *sharedInstance;
 {
 //	[_request release];
 //	_request = nil;
+	if (_connection) {
+		[_connection release];
+		_connection = nil;
+	}
 	[_queue release];
 	[_currentUserInfo release];
 	[_qualifiers release];
 	[_langCodes release];
+	[_dateFormatter release];
 	[super dealloc];
 }
 
@@ -45,6 +53,9 @@ static ObjectivePlurk *sharedInstance;
 //		_request = [[LFHTTPRequest alloc] init];
 //		[_request setDelegate:self];
 		_queue = [[NSMutableArray alloc] init];
+		_dateFormatter = [[NSDateFormatter alloc] init];
+		[_dateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
+		[_dateFormatter setDateFormat:@"yyyy-M-d'T'HH:mm:ss"];
 		_currentUserInfo = nil;
 		_qualifiers = [[NSArray alloc] initWithObjects:@"loves", @"likes", @"shares", @"gives", @"hates", @"wants", @"has", @"will", @"asks", @"wishes", @"was", @"feels", @"thinks", @"says", @"is", @":", @"freestyle", @"hopes", @"needs", @"wonders", nil];
 		_langCodes = [[NSDictionary alloc] initWithObjectsAndKeys:U8("English"), @"en", U8("Portugu"), @"pt_BR", U8("中文 (中国)"), @"cn", U8("Català"), @"ca", U8("Ελληνικά"), @"el", U8("Dansk"), @"dk", U8("Deutsch"), @"de", U8("Español"), @"es", U8("Svenska"), @"sv", U8("Norsk bokmål"), @"nb", U8("Hindi"), @"hi", U8("Română"), @"ro", U8("Hrvatski"), @"hr", U8("Français"), @"fr", U8("Pусский"), @"ru", U8("Italiano"), @"it", U8("日本語"), @"ja", U8("עברית"), @"he", U8("Magyar"), @"hu", U8("Nederlands"), @"ne", U8("ไทย"), @"th", U8("Filipino"), @"ta_fp", U8("Bahasa Indonesia"), @"in", U8("Polski"), @"pl", U8("العربية"), @"ar", U8("Finnish"), @"fi", U8("中文 (繁體中文)"), @"tr_ch", U8("Türkçe"), @"tr", U8("Gaeilge"), @"ga", U8("Slovensk"), @"sk", U8("українська"), @"uk", U8("فارسی"), @"fa", nil];
@@ -131,6 +142,7 @@ static ObjectivePlurk *sharedInstance;
 	NSString *URLString = [API_URL stringByAppendingString:URLPath];
 	URLString = [URLString stringByAppendingString:[self GETStringFromDictionary:arguments]];
 	NSURL *URL = [NSURL URLWithString:URLString];
+	NSLog(@"URL:%@", [URL description]);
 	NSDictionary *sessionInfo = [NSDictionary dictionaryWithObjectsAndKeys:actionName, @"actionName", NSStringFromSelector(successAction), @"successAction", NSStringFromSelector(failAction), @"failAction", URL, @"URL", delegate, @"delegate", nil];
 	
 //	if (![_queue count] && ![_request isRunning]) {
@@ -161,6 +173,54 @@ static ObjectivePlurk *sharedInstance;
 	[self addRequestWithURLPath:@"/API/Users/login" arguments:args actionName:loginAction successAction:@selector(loginDidSuccess:) failAction:@selector(loginDidFail:) delegate:delegate];
 }
 
+- (void)retrieveMessageWithIdentifier:(NSString *)identifer delegate:(id)delegate
+{
+	if ([identifer isKindOfClass:[NSNumber class]]) {
+		identifer = [(NSNumber *)identifer stringValue];
+	}
+	
+	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:identifer, @"plurk_id", nil];
+	[self addRequestWithURLPath:@"/API/Timeline/getPlurk" arguments:args actionName:retriveMessageAction successAction:@selector(commonAPIDidSuccess:) failAction:@selector(commonAPIDidFail:) delegate:delegate];
+}
+
+- (void)retrieveMessagesWithOffset:(NSDate *)offsetDate limit:(NSInteger)limit user:(NSString *)userID isResponded:(BOOL)isResponded isPrivate:(BOOL)isPrivate delegate:(id)delegate
+{
+	NSMutableDictionary *args = [NSMutableDictionary dictionary];
+	if (offsetDate) {
+		NSString *dateString = [_dateFormatter stringFromDate:offsetDate];
+		NSLog(@"dateString:%@", [dateString description]);
+		[args setValue:dateString forKey:@"offset"];
+	}
+	if (limit) {
+		[args setValue:[[NSNumber numberWithInt:limit] stringValue] forKey:@"limit"];
+	}
+	if (userID) {
+		[args setValue:userID forKey:@"only_user"];
+	}
+	if (isResponded) {
+		[args setValue:@"true" forKey:@"only_responded"];
+	}
+	if (isPrivate) {
+		[args setValue:@"true" forKey:@"only_private"];
+	}
+	[self addRequestWithURLPath:@"/API/Timeline/getPlurks" arguments:args actionName:retriveMessagesAction successAction:@selector(commonAPIDidSuccess:) failAction:@selector(commonAPIDidFail:) delegate:delegate];
+	
+}
+
+- (void)retrieveUnreadMessagesWithOffset:(NSDate *)offsetDate limit:(NSInteger)limit delegate:(id)delegate
+{
+	NSMutableDictionary *args = [NSMutableDictionary dictionary];
+	if (offsetDate) {
+		NSString *dateString = [_dateFormatter stringFromDate:offsetDate];
+		[args setValue:dateString forKey:@"offset"];
+	}
+	if (limit) {
+		[args setValue:[[NSNumber numberWithInt:limit] stringValue] forKey:@"limit"];
+	}
+	[self addRequestWithURLPath:@"/API/Timeline/getUnreadPlurks" arguments:args actionName:retriveUnreadMessagesAction successAction:@selector(commonAPIDidSuccess:) failAction:@selector(commonAPIDidFail:) delegate:delegate];
+
+}
+
 - (void)addMessageWithContent:(NSString *)content qualifier:(NSString *)qualifier canComment:(OPCanComment)canComment lang:(NSString *)lang limitToUsers:(NSArray *)users delegate:(id)delegate
 {
 	NSString *limitString = @"";
@@ -172,124 +232,7 @@ static ObjectivePlurk *sharedInstance;
 }
 
 
-- (void)loginDidSuccess:(NSDictionary *)sessionInfo
-{
-	id delegate = [sessionInfo valueForKey:@"delegate"];
-	NSDictionary *result = [sessionInfo valueForKey:@"result"];	
-	if ([result valueForKey:@"user_info"]) {
-		NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:result];
-		[userInfo removeObjectForKey:@"plurks"];
-		[userInfo removeObjectForKey:@"plurks_users"];
-		self.currentUserInfo = userInfo;
-	}
-	
-	if ([delegate respondsToSelector:@selector(plurk:didLoggedIn:)]) {
-		[delegate plurk:self didLoggedIn:result];
-	}
-}
-
-- (void)loginDidFail:(NSDictionary *)sessionInfo
-{
-	id delegate = [sessionInfo valueForKey:@"delegate"];
-	NSError *error = [sessionInfo valueForKey:@"error"];
-	if ([delegate respondsToSelector:@selector(plurk:didFailLoggingIn:)]) {
-		[delegate plurk:self didFailLoggingIn:error];
-	}	
-}
-
-- (void)commonAPIDidSuccess:(NSDictionary *)sessionInfo
-{
-	id delegate = [sessionInfo valueForKey:@"delegate"];
-	NSDictionary *result = [sessionInfo valueForKey:@"result"];	
-	NSString *actionName = [sessionInfo valueForKey:@"actionName"];	
-	if ([actionName isEqualToString:addMessageAction]) {
-		if ([delegate respondsToSelector:@selector(plurk:didLoggedIn:)]) {
-			[delegate plurk:self didAddMessage:result];
-		}
-	}
-	
-}
-
-- (void)commonAPIDidFail:(NSDictionary *)sessionInfo
-{
-	id delegate = [sessionInfo valueForKey:@"delegate"];
-	NSError *error = [sessionInfo valueForKey:@"error"];
-	NSString *actionName = [sessionInfo valueForKey:@"actionName"];
-	if ([actionName isEqualToString:addMessageAction]) {
-		if ([delegate respondsToSelector:@selector(plurk:didFailAddingMessage:)]) {
-			[delegate plurk:self didFailAddingMessage:error];
-		}	
-	}
-}
-
-//- (void)setShouldWaitUntilDone:(BOOL)flag
-//{
-//	[_request setShouldWaitUntilDone:flag];
-//}
-//- (BOOL)shouldWaitUntilDone
-//{
-//	return [_request shouldWaitUntilDone];
-//}
-
-- (void)connection:(OPURLConnection *)connection didReceiveData:(NSData *)data
-{
-	NSLog(@"%s", __PRETTY_FUNCTION__);
-	NSString *s = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
-	NSDictionary *result = [NSDictionary dictionaryWithJSONString:s];
-	NSDictionary *sessionInfo = [connection sessionInfo];
-	NSMutableDictionary *sessionInfoWithResult = [NSMutableDictionary dictionaryWithDictionary:sessionInfo];
-	[sessionInfoWithResult setValue:result forKey:@"result"];
-	SEL action = NSSelectorFromString([sessionInfo valueForKey:@"successAction"]);
-	[self performSelector:action withObject:sessionInfoWithResult];	
-	
-	self.currentConnection = nil;
-	[self runQueue];
-}
-
-- (void)connection:(OPURLConnection *)connection didFailWithError:(NSError *)error
-{
-	NSLog(@"%s", __PRETTY_FUNCTION__);
-	NSLog(@"error:%@", [error description]);
-
-	NSDictionary *sessionInfo = [connection sessionInfo];
-	NSMutableDictionary *sessionInfoWithError = [NSMutableDictionary dictionaryWithDictionary:sessionInfo];
-	[sessionInfoWithError setValue:error forKey:@"error"];
-	SEL action = NSSelectorFromString([sessionInfo valueForKey:@"failAction"]);
-	[self performSelector:action withObject:sessionInfoWithError];
-	
-	self.currentConnection = nil;
-	[self runQueue];
-}
-
-
-//- (void)httpRequestDidComplete:(LFHTTPRequest *)request
-//{
-//	NSLog(@"%s", __PRETTY_FUNCTION__);
-//	NSLog(@"requestHeader:%@", [[request requestHeader] description]);
-//	NSString *s = [[[NSString alloc] initWithData:[request receivedData] encoding:NSUTF8StringEncoding] autorelease];
-//	NSDictionary *result = [NSDictionary dictionaryWithJSONString:s];
-//	NSDictionary *sessionInfo = [request sessionInfo];
-//	NSMutableDictionary *sessionInfoWithResult = [NSMutableDictionary dictionaryWithDictionary:sessionInfo];
-//	[sessionInfoWithResult setValue:result forKey:@"result"];
-//	SEL action = NSSelectorFromString([sessionInfo valueForKey:@"successAction"]);
-//	[self performSelector:action withObject:sessionInfoWithResult];
-//}
-//- (void)httpRequestDidCancel:(LFHTTPRequest *)request
-//{
-//	NSLog(@"%s", __PRETTY_FUNCTION__);
-//}
-//- (void)httpRequest:(LFHTTPRequest *)request didFailWithError:(NSString *)error
-//{
-//	NSLog(@"%s", __PRETTY_FUNCTION__);
-//	NSLog(@"error:%@", [error description]);
-//
-//	NSDictionary *sessionInfo = [request sessionInfo];
-//	NSMutableDictionary *sessionInfoWithError = [NSMutableDictionary dictionaryWithDictionary:sessionInfo];
-//	[sessionInfoWithError setValue:error forKey:@"error"];
-//	SEL action = NSSelectorFromString([sessionInfo valueForKey:@"failAction"]);
-//	[self performSelector:action withObject:sessionInfoWithError];	
-//}
-
+@synthesize isLoggedIn = _isLoggedIn;
 @synthesize qualifiers = _qualifiers;
 @synthesize langCodes = _langCodes;
 @synthesize currentUserInfo = _currentUserInfo;

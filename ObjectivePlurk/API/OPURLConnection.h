@@ -11,8 +11,10 @@
 @interface OPURLConnection : NSURLConnection
 {
 	id sessionInfo;
+	NSMutableString *receivedString;
 }
 
 @property (retain, nonatomic) id sessionInfo;
+@property (readonly) NSMutableString *receivedString;
 
 @end

@@ -51,12 +51,61 @@
 {
 //	NSLog(@"result:%@", [result description]);
 	NSLog(@"%s", __PRETTY_FUNCTION__);
-	[plurk addMessageWithContent:@"This is a test for testing the Objective-C API" qualifier:@"says" canComment:OPEveryOneCanComment lang:@"en" limitToUsers:[NSArray array] delegate:self];
+//	[plurk addMessageWithContent:@"This is a test for testing the Objective-C API" qualifier:@"says" canComment:OPEveryOneCanComment lang:@"en" limitToUsers:[NSArray array] delegate:self];
+
+//	NSLog(@"result:%@", [result description]);
+//	NSArray *messages = [result valueForKey:@"plurks"];
+//	if ([messages count]) {
+//		NSDictionary *message = [messages objectAtIndex:0];
+//		[plurk retrieveMessageWithIdentifier:[message valueForKey:@"plurk_id"] delegate:self];
+//	}
+//	[plurk retrieveMessagesWithOffset:[NSDate dateWithTimeIntervalSinceNow:-(60 * 60)] limit:1 user:nil isResponded:NO isPrivate:NO delegate:self];
+//	[plurk retrieveMessagesWithOffset:[NSDate date] limit:1 user:nil isResponded:NO isPrivate:NO delegate:self];
+	[plurk retrieveUnreadMessagesWithOffset:[NSDate date] limit:10 delegate:self];
 }
 - (void)plurk:(ObjectivePlurk *)plurk didFailLoggingIn:(NSError *)error
 {
+	NSLog(@"%s", __PRETTY_FUNCTION__);
 	NSLog(@"error:%@", [error description]);
 }
+
+- (void)plurk:(ObjectivePlurk *)plurk didRetrieveMessage:(NSDictionary *)result
+{
+	NSLog(@"%s", __PRETTY_FUNCTION__);
+	NSLog(@"result:%@", [result description]);
+
+}
+
+- (void)plurk:(ObjectivePlurk *)plurk didFailRetrievingMessage:(NSError *)error
+{
+	NSLog(@"%s", __PRETTY_FUNCTION__);
+	NSLog(@"error:%@", [error description]);
+}
+
+- (void)plurk:(ObjectivePlurk *)plurk didRetrieveMessages:(NSDictionary *)result
+{
+	NSLog(@"%s", __PRETTY_FUNCTION__);
+	NSLog(@"result:%@", [result description]);
+}
+
+- (void)plurk:(ObjectivePlurk *)plurk didFailRetrievingMessages:(NSError *)error
+{
+	NSLog(@"%s", __PRETTY_FUNCTION__);
+	NSLog(@"error:%@", [error description]);
+}
+
+- (void)plurk:(ObjectivePlurk *)plurk didRetrieveUnreadMessages:(NSDictionary *)result
+{
+	NSLog(@"%s", __PRETTY_FUNCTION__);
+	NSLog(@"result:%@", [result description]);
+}
+
+- (void)plurk:(ObjectivePlurk *)plurk didFailRetrievingUnreadMessages:(NSError *)error
+{
+	NSLog(@"%s", __PRETTY_FUNCTION__);
+	NSLog(@"error:%@", [error description]);
+}
+
 
 
 - (void)plurk:(ObjectivePlurk *)plurk didAddMessage:(NSDictionary *)result

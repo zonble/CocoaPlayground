@@ -13,9 +13,22 @@
 - (void)dealloc
 {
 	[sessionInfo release];
+	[receivedString release];
 	[super dealloc];
 }
 
+- (id)initWithRequest:(NSURLRequest *)request delegate:(id)delegate
+{
+	self = [super initWithRequest:request delegate:delegate];
+	if (self != nil) {
+		sessionInfo = nil;
+		receivedString = [[NSMutableString alloc] init];
+	}
+	return self;
+}
+
+
 @synthesize sessionInfo;
+@synthesize receivedString;
 
 @end
