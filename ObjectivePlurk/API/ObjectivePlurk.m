@@ -26,12 +26,10 @@ static ObjectivePlurk *sharedInstance;
 
 - (void)dealloc
 {
-//	[_request release];
-//	_request = nil;
-	if (_connection) {
-		[_connection release];
-		_connection = nil;
-	}
+	_request.delegate = nil;
+	[_request cancelWithoutDelegateMessage];
+	[_request release];
+	_request = nil;
 	[_queue release];
 	[_currentUserInfo release];
 	[_qualifiers release];
@@ -44,8 +42,8 @@ static ObjectivePlurk *sharedInstance;
 {
 	self = [super init];
 	if (self != nil) {
-//		_request = [[LFHTTPRequest alloc] init];
-//		[_request setDelegate:self];
+		_request = [[LFHTTPRequest alloc] init];
+		[_request setDelegate:self];
 		_queue = [[NSMutableArray alloc] init];
 		_dateFormatter = [[NSDateFormatter alloc] init];
 		[_dateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
@@ -77,11 +75,7 @@ static ObjectivePlurk *sharedInstance;
 
 - (void)cancelAllRequest
 {
-//	[_request cancelWithoutDelegateMessage];
-	if (self.currentConnection) {
-		[self.currentConnection cancel];
-		self.currentConnection = nil;
-	}
+	[_request cancelWithoutDelegateMessage];
 	[_queue removeAllObjects];
 }
 - (void)cancelAllRequestWithDelegate:(id)delegate
@@ -98,16 +92,11 @@ static ObjectivePlurk *sharedInstance;
 			[_queue removeObject:sessionInfo];
 		}
 	}
-//	if ([_request isRunning]) {
-	if (_connection) {
-//		id sessionInfo = [_request sessionInfo];
-		id sessionInfo = [_connection sessionInfo];
+	if ([_request isRunning]) {
+		id sessionInfo = [_request sessionInfo];
 		id theDelegate = [sessionInfo objectForKey:@"delegate"];
 		if (theDelegate == delegate) {
-//			[_request cancelWithoutDelegateMessage];
-			[_connection cancel];
-			self.currentConnection = nil;
-			[self runQueue];
+			[_request cancelWithoutDelegateMessage];
 		}
 	}
 }
@@ -115,40 +104,31 @@ static ObjectivePlurk *sharedInstance;
 {
 	if ([_queue count]) {
 		id sessionInfo = [_queue objectAtIndex:0];
-		NSURL *URL = [sessionInfo objectForKey:@"URL"];
-				
-//		[_request setSessionInfo:sessionInfo];
-//		[_request performMethod:LFHTTPRequestGETMethod onURL:URL withData:nil];
-		
-		NSURLRequest *request =  [NSURLRequest requestWithURL:URL];
-		OPURLConnection *connection = [[[OPURLConnection alloc] initWithRequest:request delegate:self] autorelease];
-		self.currentConnection = connection;
-		connection.sessionInfo = sessionInfo;
-		[connection start];
-		
+		NSURL *URL = [sessionInfo objectForKey:@"URL"];	
+		NSLog(@"_request.requestHeader:%@", [_request.requestHeader description]);
+		[_request setSessionInfo:sessionInfo];
+		[_request performMethod:LFHTTPRequestGETMethod onURL:URL withData:nil];		
 		[_queue removeObject:sessionInfo];		
 	}
 }
 
+- (void)logout
+{
+	_request.requestHeader = nil;
+}
 
-- (void)addRequestWithURLPath:(NSString *)URLPath arguments:(NSDictionary *)arguments actionName:(NSString *)actionName successAction:(SEL)successAction failAction:(SEL)failAction delegate:(id)delegate
+- (void)addRequestWithURLPath:(NSString *)URLPath arguments:(NSDictionary *)arguments actionName:(NSString *)actionName delegate:(id)delegate
 {
 	NSString *URLString = [API_URL stringByAppendingString:URLPath];
 	URLString = [URLString stringByAppendingString:[self GETStringFromDictionary:arguments]];
 	NSURL *URL = [NSURL URLWithString:URLString];
 	NSLog(@"URL:%@", [URL description]);
-	NSDictionary *sessionInfo = [NSDictionary dictionaryWithObjectsAndKeys:actionName, @"actionName", NSStringFromSelector(successAction), @"successAction", NSStringFromSelector(failAction), @"failAction", URL, @"URL", delegate, @"delegate", nil];
+	NSDictionary *sessionInfo = [NSDictionary dictionaryWithObjectsAndKeys:actionName, @"actionName", URL, @"URL", delegate, @"delegate", nil];
 	
-//	if (![_queue count] && ![_request isRunning]) {
-//		[_request setSessionInfo:sessionInfo];
-//		[_request performMethod:LFHTTPRequestGETMethod onURL:URL withData:nil];
-//	}
-	if (![_queue count] && !self.currentConnection) {
-		NSURLRequest *request =  [NSURLRequest requestWithURL:URL];
-		OPURLConnection *connection = [[[OPURLConnection alloc] initWithRequest:request delegate:self] autorelease];
-		self.currentConnection = connection;
-		connection.sessionInfo = sessionInfo;
-		[connection start];
+	if (![_queue count] && ![_request isRunning]) {
+		NSLog(@"_request.requestHeader:%@", [_request.requestHeader description]);
+		[_request setSessionInfo:sessionInfo];
+		[_request performMethod:LFHTTPRequestGETMethod onURL:URL withData:nil];
 	}
 	
 	else {
@@ -204,14 +184,14 @@ static ObjectivePlurk *sharedInstance;
 - (void)loginWithUsername:(NSString *)username password:(NSString *)password delegate:(id)delegate
 {
 	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:username, @"username", password, @"password", nil];
-	[self addRequestWithURLPath:@"/API/Users/login" arguments:args actionName:OPLoginAction successAction:@selector(loginDidSuccess:) failAction:@selector(loginDidFail:) delegate:delegate];
+	[self addRequestWithURLPath:@"/API/Users/login" arguments:args actionName:OPLoginAction delegate:delegate];
 }
 
 #pragma mark Profiles
 
 - (void)retrieveMyProfileWithDelegate:(id)delegate
 {
-	[self addRequestWithURLPath:@"/API/Profile/getOwnProfile" arguments:nil actionName:OPRetrieveMyProfileAction successAction:@selector(commonAPIDidSuccess:) failAction:@selector(commonAPIDidFail:) delegate:delegate];
+	[self addRequestWithURLPath:@"/API/Profile/getOwnProfile" arguments:nil actionName:OPRetrieveMyProfileAction delegate:delegate];
 }
 
 - (void)retrievePublicProfileWithUserIdentifier:(NSString *)userIdentifier delegate:(id)delegate
@@ -221,7 +201,7 @@ static ObjectivePlurk *sharedInstance;
 	}
 	
 	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:userIdentifier, @"user_id", nil];
-	[self addRequestWithURLPath:@"/API/Profile/getPublicProfile" arguments:args actionName:OPRetrievePublicProfileAction successAction:@selector(commonAPIDidSuccess:) failAction:@selector(commonAPIDidFail:) delegate:delegate];	
+	[self addRequestWithURLPath:@"/API/Profile/getPublicProfile" arguments:args actionName:OPRetrievePublicProfileAction delegate:delegate];	
 }
 
 #pragma mark Timeline
@@ -233,7 +213,7 @@ static ObjectivePlurk *sharedInstance;
 	}
 	
 	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:identifer, @"plurk_id", nil];
-	[self addRequestWithURLPath:@"/API/Timeline/getPlurk" arguments:args actionName:OPRetriveMessageAction successAction:@selector(commonAPIDidSuccess:) failAction:@selector(commonAPIDidFail:) delegate:delegate];
+	[self addRequestWithURLPath:@"/API/Timeline/getPlurk" arguments:args actionName:OPRetriveMessageAction delegate:delegate];
 }
 
 - (void)retrieveMessagesWithDateOffset:(NSDate *)offsetDate limit:(NSInteger)limit user:(NSString *)userID isResponded:(BOOL)isResponded isPrivate:(BOOL)isPrivate delegate:(id)delegate
@@ -256,7 +236,7 @@ static ObjectivePlurk *sharedInstance;
 	if (isPrivate) {
 		[args setValue:@"true" forKey:@"only_private"];
 	}
-	[self addRequestWithURLPath:@"/API/Timeline/getPlurks" arguments:args actionName:OPRetriveMessagesAction successAction:@selector(commonAPIDidSuccess:) failAction:@selector(commonAPIDidFail:) delegate:delegate];
+	[self addRequestWithURLPath:@"/API/Timeline/getPlurks" arguments:args actionName:OPRetriveMessagesAction delegate:delegate];
 	
 }
 
@@ -270,26 +250,26 @@ static ObjectivePlurk *sharedInstance;
 	if (limit) {
 		[args setValue:[[NSNumber numberWithInt:limit] stringValue] forKey:@"limit"];
 	}
-	[self addRequestWithURLPath:@"/API/Timeline/getUnreadPlurks" arguments:args actionName:OPRetriveUnreadMessagesAction successAction:@selector(commonAPIDidSuccess:) failAction:@selector(commonAPIDidFail:) delegate:delegate];
+	[self addRequestWithURLPath:@"/API/Timeline/getUnreadPlurks" arguments:args actionName:OPRetriveUnreadMessagesAction delegate:delegate];
 
 }
 
 - (void)muteMessagesWithMessageIdentifiers:(NSArray *)identifiers delegate:(id)delegate
 {
 	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:[identifiers jsonStringValue], @"ids", nil];
-	[self addRequestWithURLPath:@"/API/Timeline/mutePlurks" arguments:args actionName:OPMuteMessagesAction successAction:@selector(loginDidSuccess:) failAction:@selector(loginDidFail:) delegate:delegate];
+	[self addRequestWithURLPath:@"/API/Timeline/mutePlurks" arguments:args actionName:OPMuteMessagesAction delegate:delegate];
 }
 
 - (void)unmuteMessagesWithMessageIdentifiers:(NSArray *)identifiers delegate:(id)delegate
 {
 	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:[identifiers jsonStringValue], @"ids", nil];
-	[self addRequestWithURLPath:@"/API/Timeline/unmutePlurks" arguments:args actionName:OPUnmuteMessagesAction successAction:@selector(loginDidSuccess:) failAction:@selector(loginDidFail:) delegate:delegate];
+	[self addRequestWithURLPath:@"/API/Timeline/unmutePlurks" arguments:args actionName:OPUnmuteMessagesAction delegate:delegate];
 }
 
 - (void)markMessagesAsReadWithMessageIdentifiers:(NSArray *)identifiers delegate:(id)delegate
 {
 	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:[identifiers jsonStringValue], @"ids", nil];
-	[self addRequestWithURLPath:@"/API/Timeline/markAsRead" arguments:args actionName:OPMarkMessageAsReadAction successAction:@selector(loginDidSuccess:) failAction:@selector(loginDidFail:) delegate:delegate];
+	[self addRequestWithURLPath:@"/API/Timeline/markAsRead" arguments:args actionName:OPMarkMessageAsReadAction delegate:delegate];
 }
 
 - (void)addNewMessageWithContent:(NSString *)content qualifier:(NSString *)qualifier othersCanComment:(OPCanComment)canComment lang:(NSString *)lang limitToUsers:(NSArray *)users delegate:(id)delegate
@@ -299,7 +279,7 @@ static ObjectivePlurk *sharedInstance;
 		limitString = [users jsonStringValue];
 	}
 	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:content, @"content", qualifier, @"qualifier", [[NSNumber numberWithInt:canComment] stringValue], @"no_comments", lang, @"lang", limitString, @"limited_to", nil];
-	[self addRequestWithURLPath:@"/API/Timeline/plurkAdd" arguments:args actionName:OPAddMessageAction successAction:@selector(commonAPIDidSuccess:) failAction:@selector(commonAPIDidFail:) delegate:delegate];
+	[self addRequestWithURLPath:@"/API/Timeline/plurkAdd" arguments:args actionName:OPAddMessageAction delegate:delegate];
 }
 
 - (void)deleteMessageWithMessageIdentifier:(NSString *)identifer delegate:(id)delegate
@@ -309,7 +289,7 @@ static ObjectivePlurk *sharedInstance;
 	}
 	
 	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:identifer, @"plurk_id", nil];
-	[self addRequestWithURLPath:@"/API/Timeline/plurkDelete" arguments:args actionName:OPDeleteMessageAction successAction:@selector(commonAPIDidSuccess:) failAction:@selector(commonAPIDidFail:) delegate:delegate];	
+	[self addRequestWithURLPath:@"/API/Timeline/plurkDelete" arguments:args actionName:OPDeleteMessageAction delegate:delegate];	
 }
 - (void)editMessageWithMessageIdentifier:(NSString *)identifer content:(NSString *)content delegate:(id)delegate
 {
@@ -318,15 +298,20 @@ static ObjectivePlurk *sharedInstance;
 	}
 	
 	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:identifer, @"plurk_id", content, @"content", nil];
-	[self addRequestWithURLPath:@"/API/Timeline/plurkEdit" arguments:args actionName:OPEditMessageAction successAction:@selector(commonAPIDidSuccess:) failAction:@selector(commonAPIDidFail:) delegate:delegate];		
+	[self addRequestWithURLPath:@"/API/Timeline/plurkEdit" arguments:args actionName:OPEditMessageAction delegate:delegate];		
 }
 
+- (BOOL)isLoggedIn
+{
+	NSDictionary *requestHeader = [_request requestHeader];
+	if ([requestHeader valueForKey:@"Cookie"]) {
+		return YES;
+	}
+	return NO;
+}
 
-
-@synthesize isLoggedIn = _isLoggedIn;
 @synthesize qualifiers = _qualifiers;
 @synthesize langCodes = _langCodes;
 @synthesize currentUserInfo = _currentUserInfo;
-@synthesize currentConnection = _connection;
 
 @end

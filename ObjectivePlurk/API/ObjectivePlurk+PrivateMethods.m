@@ -27,9 +27,12 @@ NSString *OPEditMessageAction = @"OPEditMessageAction";
 
 @implementation ObjectivePlurk(PrivateMethods)
 
-- (void)loginDidSuccess:(NSDictionary *)sessionInfo
+- (void)loginDidSuccess:(LFHTTPRequest *)request
 {
-	NSDictionary *result = [sessionInfo valueForKey:@"result"];	
+//	NSDictionary *result = [sessionInfo valueForKey:@"result"];	
+	NSString *s = [[[NSString alloc] initWithData:[request receivedData] encoding:NSUTF8StringEncoding] autorelease];
+	NSDictionary *result = [NSDictionary dictionaryWithJSONString:s];	
+	NSDictionary *sessionInfo = [request sessionInfo];
 	
 	if ([result valueForKey:@"error_text"]) {
 		NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
@@ -40,6 +43,11 @@ NSString *OPEditMessageAction = @"OPEditMessageAction";
 		return;
 	}	
 	
+	NSDictionary *header = [request receivedHeader];
+	NSString *cookie = [header valueForKey:@"Set-Cookie"];
+	NSDictionary *requestHeader = [NSDictionary dictionaryWithObjectsAndKeys:cookie, @"Cookie", nil];
+	_request.requestHeader = requestHeader;
+	
 	id delegate = [sessionInfo valueForKey:@"delegate"];
 	if ([result valueForKey:@"user_info"]) {
 		NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:result];
@@ -47,8 +55,6 @@ NSString *OPEditMessageAction = @"OPEditMessageAction";
 		[userInfo removeObjectForKey:@"plurks_users"];
 		self.currentUserInfo = userInfo;
 	}
-	
-	_isLoggedIn = YES;
 	
 	if ([delegate respondsToSelector:@selector(plurk:didLoggedIn:)]) {
 		[delegate plurk:self didLoggedIn:result];
@@ -200,73 +206,45 @@ NSString *OPEditMessageAction = @"OPEditMessageAction";
 			[delegate plurk:self didFailEditingMessage:error];
 		}	
 	}
-	
-	
 }
 
-#pragma mark NSURLConnection delegate methods
-
-- (void)connection:(OPURLConnection *)connection didReceiveData:(NSData *)data
+- (void)httpRequestDidComplete:(LFHTTPRequest *)request
 {
-	NSString *s = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
-	[connection.receivedString appendString:s];
-}
-
-- (void)connectionDidFinishLoading:(OPURLConnection *)connection
-{
-	NSString *s = connection.receivedString;
-	NSDictionary *result = [NSDictionary dictionaryWithJSONString:s];
-	NSDictionary *sessionInfo = [connection sessionInfo];
-	NSMutableDictionary *sessionInfoWithResult = [NSMutableDictionary dictionaryWithDictionary:sessionInfo];
-	[sessionInfoWithResult setValue:result forKey:@"result"];
-	SEL action = NSSelectorFromString([sessionInfo valueForKey:@"successAction"]);
-	[self performSelector:action withObject:sessionInfoWithResult];	
-	
-	self.currentConnection = nil;
+	NSDictionary *sessionInfo = [request sessionInfo];
+	NSString *actionName = [sessionInfo valueForKey:@"actionName"];
+	if ([actionName isEqualToString:OPLoginAction]) {
+		[self loginDidSuccess:request];
+	}
+	else {
+		NSString *s = [[[NSString alloc] initWithData:[request receivedData] encoding:NSUTF8StringEncoding] autorelease];
+		NSDictionary *result = [NSDictionary dictionaryWithJSONString:s];
+		NSMutableDictionary *sessionInfoWithResult = [NSMutableDictionary dictionaryWithDictionary:sessionInfo];
+		[sessionInfoWithResult setValue:result forKey:@"result"];		
+		[self commonAPIDidSuccess:sessionInfoWithResult];
+	}
 	[self runQueue];
 }
-
-- (void)connection:(OPURLConnection *)connection didFailWithError:(NSError *)error
+- (void)httpRequestDidCancel:(LFHTTPRequest *)request
 {
-	NSDictionary *sessionInfo = [connection sessionInfo];
-	NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithDictionary:[error userInfo]];
-	[dictionary setValue:sessionInfo forKey:@"sessionInfo"];
-	NSError *newError = [NSError errorWithDomain:[error domain] code:[error code] userInfo:dictionary];
-	SEL action = NSSelectorFromString([sessionInfo valueForKey:@"failAction"]);
-	[self performSelector:action withObject:newError];
-	
-	self.currentConnection = nil;
 	[self runQueue];
 }
+- (void)httpRequest:(LFHTTPRequest *)request didFailWithError:(NSString *)error
+{
+	NSDictionary *sessionInfo = [request sessionInfo];
+	NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+	[dictionary setValue:sessionInfo forKey:@"sessionInfo"];	
+	NSError *theError = [NSError errorWithDomain:ObjectivePlurkErrorDomain code:0 userInfo:dictionary];
+	
+	NSString *actionName = [sessionInfo valueForKey:@"actionName"];
+	if ([actionName isEqualToString:OPLoginAction]) {
+		[self loginDidFail:theError];
+	}
+	else {
+		[self commonAPIDidFail:theError];
+	}
 
-
-//- (void)httpRequestDidComplete:(LFHTTPRequest *)request
-//{
-//	NSLog(@"%s", __PRETTY_FUNCTION__);
-//	NSLog(@"requestHeader:%@", [[request requestHeader] description]);
-//	NSString *s = [[[NSString alloc] initWithData:[request receivedData] encoding:NSUTF8StringEncoding] autorelease];
-//	NSDictionary *result = [NSDictionary dictionaryWithJSONString:s];
-//	NSDictionary *sessionInfo = [request sessionInfo];
-//	NSMutableDictionary *sessionInfoWithResult = [NSMutableDictionary dictionaryWithDictionary:sessionInfo];
-//	[sessionInfoWithResult setValue:result forKey:@"result"];
-//	SEL action = NSSelectorFromString([sessionInfo valueForKey:@"successAction"]);
-//	[self performSelector:action withObject:sessionInfoWithResult];
-//}
-//- (void)httpRequestDidCancel:(LFHTTPRequest *)request
-//{
-//	NSLog(@"%s", __PRETTY_FUNCTION__);
-//}
-//- (void)httpRequest:(LFHTTPRequest *)request didFailWithError:(NSString *)error
-//{
-//	NSLog(@"%s", __PRETTY_FUNCTION__);
-//	NSLog(@"error:%@", [error description]);
-//
-//	NSDictionary *sessionInfo = [request sessionInfo];
-//	NSMutableDictionary *sessionInfoWithError = [NSMutableDictionary dictionaryWithDictionary:sessionInfo];
-//	[sessionInfoWithError setValue:error forKey:@"error"];
-//	SEL action = NSSelectorFromString([sessionInfo valueForKey:@"failAction"]);
-//	[self performSelector:action withObject:sessionInfoWithError];	
-//}
+	[self runQueue];
+}
 
 @end
 

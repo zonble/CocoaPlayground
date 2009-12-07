@@ -7,8 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-//#import "LFWebAPIKit.h"
-#import "OPURLConnection.h"
+#import "LFWebAPIKit.h"
 #import "NSArray+BSJSONAdditions.h"
 #import "NSDictionary+BSJSONAdditions.h"
 
@@ -94,20 +93,19 @@ extern NSString *OPEditMessageAction;
 
 @interface ObjectivePlurk : NSObject
 {
-//	LFHTTPRequest *_request;
+	LFHTTPRequest *_request;
 	NSMutableArray *_queue;
 	NSArray *_qualifiers;
 	NSDictionary *_langCodes;
-	OPURLConnection *_connection;
 	NSDictionary *_currentUserInfo;
 	NSDateFormatter *_dateFormatter;
-	BOOL _isLoggedIn;
 }
 
 + (ObjectivePlurk *)sharedInstance;
 - (void)cancelAllRequest;
 - (void)cancelAllRequestWithDelegate:(id)delegate;
 - (void)runQueue;
+- (void)logout;
 
 - (NSString *)imageURLStringForUser:(id)identifier size:(OPUserProfileImageSize)size hasProfileImage:(BOOL)hasProfileImage avatar:(NSString *)avatar;
 
@@ -135,8 +133,7 @@ extern NSString *OPEditMessageAction;
 
 @property (readonly) NSArray *qualifiers;
 @property (readonly) NSDictionary *langCodes;
-@property (assign) BOOL isLoggedIn;
+@property (readonly, getter=isLoggedIn) BOOL loggedIn;
 @property (copy, nonatomic) NSDictionary *currentUserInfo;
-@property (retain) OPURLConnection *currentConnection;
 
 @end

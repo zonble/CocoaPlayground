@@ -43,7 +43,6 @@
 		D4A5005B10C9B97200DB71B3 /* LFHTTPRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = D47077E510C995E400D8A198 /* LFHTTPRequest.m */; };
 		D4A5005C10C9B97200DB71B3 /* LFSiteReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = D47077E710C995E400D8A198 /* LFSiteReachability.m */; };
 		D4A5005D10C9B97200DB71B3 /* NSData+LFHTTPFormExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = D47077EA10C995E400D8A198 /* NSData+LFHTTPFormExtensions.m */; };
-		D4A5033810C9DB3000DB71B3 /* OPURLConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = D4A5033710C9DB3000DB71B3 /* OPURLConnection.m */; };
 		D4A503DA10C9E2A000DB71B3 /* ObjectivePlurk+PrivateMethods.m in Sources */ = {isa = PBXBuildFile; fileRef = D4A503D910C9E2A000DB71B3 /* ObjectivePlurk+PrivateMethods.m */; };
 /* End PBXBuildFile section */
 
@@ -84,8 +83,6 @@
 		D470784710C996FE00D8A198 /* PlurkAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlurkAPI.h; sourceTree = "<group>"; };
 		D470784D10C997D000D8A198 /* ObjectivePlurk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ObjectivePlurk.h; path = API/ObjectivePlurk.h; sourceTree = "<group>"; };
 		D470784E10C997D000D8A198 /* ObjectivePlurk.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ObjectivePlurk.m; path = API/ObjectivePlurk.m; sourceTree = "<group>"; };
-		D4A5033610C9DB3000DB71B3 /* OPURLConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OPURLConnection.h; path = API/OPURLConnection.h; sourceTree = "<group>"; };
-		D4A5033710C9DB3000DB71B3 /* OPURLConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OPURLConnection.m; path = API/OPURLConnection.m; sourceTree = "<group>"; };
 		D4A503D810C9E2A000DB71B3 /* ObjectivePlurk+PrivateMethods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "ObjectivePlurk+PrivateMethods.h"; path = "API/ObjectivePlurk+PrivateMethods.h"; sourceTree = "<group>"; };
 		D4A503D910C9E2A000DB71B3 /* ObjectivePlurk+PrivateMethods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "ObjectivePlurk+PrivateMethods.m"; path = "API/ObjectivePlurk+PrivateMethods.m"; sourceTree = "<group>"; };
 		D4A5FF3C10C9B86E00DB71B3 /* APITest.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = APITest.octest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -240,8 +237,6 @@
 				D470784E10C997D000D8A198 /* ObjectivePlurk.m */,
 				D4A503D810C9E2A000DB71B3 /* ObjectivePlurk+PrivateMethods.h */,
 				D4A503D910C9E2A000DB71B3 /* ObjectivePlurk+PrivateMethods.m */,
-				D4A5033610C9DB3000DB71B3 /* OPURLConnection.h */,
-				D4A5033710C9DB3000DB71B3 /* OPURLConnection.m */,
 			);
 			name = "API Box";
 			sourceTree = "<group>";
@@ -370,7 +365,6 @@
 				D47077FE10C9962000D8A198 /* NSScanner+BSJSONAdditions.m in Sources */,
 				D47077FF10C9962000D8A198 /* NSString+BSJSONAdditions.m in Sources */,
 				D470784F10C997D000D8A198 /* ObjectivePlurk.m in Sources */,
-				D4A5033810C9DB3000DB71B3 /* OPURLConnection.m in Sources */,
 				D4A503DA10C9E2A000DB71B3 /* ObjectivePlurk+PrivateMethods.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

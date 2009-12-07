@@ -52,7 +52,8 @@
 	NSLog(@"%s", __PRETTY_FUNCTION__);
 //	NSLog(@"result:%@", [result description]);
 //	[plurk retrieveMyProfileWithDelegate:self];
-	[plurk retrievePublicProfileWithUserIdentifier:@"3291538" delegate:self];
+//	[plurk retrievePublicProfileWithUserIdentifier:@"3291538" delegate:self];
+	[plurk retrieveMessagesWithDateOffset:nil limit:20 user:nil isResponded:NO isPrivate:NO delegate:self];
 	
 }
 - (void)plurk:(ObjectivePlurk *)plurk didFailLoggingIn:(NSError *)error
@@ -61,40 +62,17 @@
 	NSLog(@"error:%@", [error description]);
 }
 
-//- (void)plurk:(ObjectivePlurk *)plurk didRetrieveMyProfile:(NSDictionary *)result
-//{
-//	NSLog(@"%s", __PRETTY_FUNCTION__);
-//	NSLog(@"result:%@", [result description]);
-//}
-//- (void)plurk:(ObjectivePlurk *)plurk didFailRetrievingMyProfile:(NSError *)error
-//{
-//	NSLog(@"%s", __PRETTY_FUNCTION__);
-//	NSLog(@"error:%@", [error description]);
-//}
-
-- (void)plurk:(ObjectivePlurk *)plurk didRetrievePublicProfile:(NSDictionary *)result
+- (void)plurk:(ObjectivePlurk *)plurk didRetrieveMessages:(NSDictionary *)result
 {
 	NSLog(@"%s", __PRETTY_FUNCTION__);
 	NSLog(@"result:%@", [result description]);
 }
-- (void)plurk:(ObjectivePlurk *)plurk didFailRetrievingPublicProfile:(NSError *)error
+- (void)plurk:(ObjectivePlurk *)plurk didFailRetrievingMessages:(NSError *)error
 {
 	NSLog(@"%s", __PRETTY_FUNCTION__);
 	NSLog(@"error:%@", [error description]);
 }
 
-
-- (void)plurk:(ObjectivePlurk *)plurk didRetrieveMessage:(NSDictionary *)result
-{
-	NSLog(@"%s", __PRETTY_FUNCTION__);
-	NSLog(@"result:%@", [result description]);
-}
-
-- (void)plurk:(ObjectivePlurk *)plurk didFailRetrievingMessage:(NSError *)error
-{
-	NSLog(@"%s", __PRETTY_FUNCTION__);
-	NSLog(@"error:%@", [error description]);
-}
 
 
 #pragma mark -
