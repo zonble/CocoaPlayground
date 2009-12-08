@@ -8,12 +8,12 @@
 
 #import "ObjectivePlurk+PrivateMethods.h"
 
+NSString *ObjectivePlurkAPIURLString = @"https://www.plurk.com";
 NSString *ObjectivePlurkErrorDomain = @"ObjectivePlurkErrorDomain";
 
 NSString *OPLoginAction = @"OPLoginAction";
 
-NSString *OPRetrieveMyProfileAction = @"OPRetrieveMyProfileAction";
-NSString *OPRetrievePublicProfileAction = @"OPRetrievePublicProfileAction";
+NSString *OPRetrivePollingMessageAction = @"OPRetrivePollingMessageAction";
 
 NSString *OPRetriveMessageAction = @"OPRetriveMessageAction";
 NSString *OPRetriveMessagesAction = @"OPRetriveMessagesAction";
@@ -25,7 +25,54 @@ NSString *OPAddMessageAction = @"OPAddMessageAction";
 NSString *OPDeleteMessageAction = @"OPDeleteMessageAction";
 NSString *OPEditMessageAction = @"OPEditMessageAction";
 
+NSString *OPRetrieveMyProfileAction = @"OPRetrieveMyProfileAction";
+NSString *OPRetrievePublicProfileAction = @"OPRetrievePublicProfileAction";
+
+
 @implementation ObjectivePlurk(PrivateMethods)
+
+- (NSString *)GETStringFromDictionary:(NSDictionary *)inDictionary
+{
+	NSMutableDictionary *d = [NSMutableDictionary dictionaryWithDictionary:inDictionary];
+	[d setValue:APIKey forKey:@"api_key"];
+	
+	NSMutableString *s = [NSMutableString string];
+	for (NSString *key in [d allKeys]) {
+		if ([key isEqual:[[d allKeys] objectAtIndex:0]]) {
+			[s setString:@"?"];
+		}
+		[s appendFormat:@"%@=%@", key, [[d valueForKey:key] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+		if (![key isEqual:[[d allKeys] lastObject]]) {
+			[s appendString:@"&"];
+		}
+	}
+	return s;
+}
+
+- (void)addRequestWithURLPath:(NSString *)URLPath arguments:(NSDictionary *)arguments actionName:(NSString *)actionName delegate:(id)delegate
+{
+	NSString *URLString = [ObjectivePlurkAPIURLString stringByAppendingString:URLPath];
+	URLString = [URLString stringByAppendingString:[self GETStringFromDictionary:arguments]];
+	NSURL *URL = [NSURL URLWithString:URLString];
+	NSLog(@"URL:%@", [URL description]);
+	NSDictionary *sessionInfo = [NSDictionary dictionaryWithObjectsAndKeys:actionName, @"actionName", URL, @"URL", delegate, @"delegate", nil];
+	
+	if (![_queue count] && ![_request isRunning]) {
+		NSLog(@"_request.requestHeader:%@", [_request.requestHeader description]);
+		[_request setSessionInfo:sessionInfo];
+		[_request performMethod:LFHTTPRequestGETMethod onURL:URL withData:nil];
+	}
+	
+	else {
+		if ([_queue count]) {
+			[_queue insertObject:sessionInfo atIndex:0];
+		}
+		else {
+			[_queue addObject:sessionInfo];
+		}
+	}
+}
+
 
 - (void)loginDidSuccess:(LFHTTPRequest *)request
 {
@@ -86,17 +133,7 @@ NSString *OPEditMessageAction = @"OPEditMessageAction";
 	id delegate = [sessionInfo valueForKey:@"delegate"];	
 	NSString *actionName = [sessionInfo valueForKey:@"actionName"];	
 
-	if ([actionName isEqualToString:OPRetrieveMyProfileAction]) {
-		if ([delegate respondsToSelector:@selector(plurk:didRetrieveMyProfile:)]) {
-			[delegate plurk:self didRetrieveMyProfile:result];
-		}
-	}
-	else if ([actionName isEqualToString:OPRetrievePublicProfileAction]) {
-		if ([delegate respondsToSelector:@selector(plurk:didRetrievePublicProfile:)]) {
-			[delegate plurk:self didRetrievePublicProfile:result];
-		}
-	}	
-	else if ([actionName isEqualToString:OPRetriveMessageAction]) {
+	if ([actionName isEqualToString:OPRetriveMessageAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didRetrieveMessage:)]) {
 			[delegate plurk:self didRetrieveMessage:result];
 		}
@@ -141,6 +178,18 @@ NSString *OPEditMessageAction = @"OPEditMessageAction";
 			[delegate plurk:self didEditMessage:result];
 		}
 	}
+	
+	else if ([actionName isEqualToString:OPRetrieveMyProfileAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didRetrieveMyProfile:)]) {
+			[delegate plurk:self didRetrieveMyProfile:result];
+		}
+	}
+	else if ([actionName isEqualToString:OPRetrievePublicProfileAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didRetrievePublicProfile:)]) {
+			[delegate plurk:self didRetrievePublicProfile:result];
+		}
+	}	
+	
 
 }
 
@@ -151,17 +200,7 @@ NSString *OPEditMessageAction = @"OPEditMessageAction";
 
 	NSString *actionName = [sessionInfo valueForKey:@"actionName"];
 
-	if ([actionName isEqualToString:OPRetrieveMyProfileAction]) {
-		if ([delegate respondsToSelector:@selector(plurk:didFailRetrievingMyProfile:)]) {
-			[delegate plurk:self didFailRetrievingMyProfile:error];
-		}
-	}	
-	else if ([actionName isEqualToString:OPRetrievePublicProfileAction]) {
-		if ([delegate respondsToSelector:@selector(plurk:didFailRetrievingPublicProfile:)]) {
-			[delegate plurk:self didFailRetrievingPublicProfile:error];
-		}
-	}	
-	else if ([actionName isEqualToString:OPRetriveMessageAction]) {
+	if ([actionName isEqualToString:OPRetriveMessageAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didFailRetrievingMessage:)]) {
 			[delegate plurk:self didFailRetrievingMessage:error];
 		}
@@ -204,8 +243,19 @@ NSString *OPEditMessageAction = @"OPEditMessageAction";
 	else if ([actionName isEqualToString:OPEditMessageAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didFailEditingMessage:)]) {
 			[delegate plurk:self didFailEditingMessage:error];
-		}	
+		}
 	}
+	else if ([actionName isEqualToString:OPRetrieveMyProfileAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailRetrievingMyProfile:)]) {
+			[delegate plurk:self didFailRetrievingMyProfile:error];
+		}
+	}	
+	else if ([actionName isEqualToString:OPRetrievePublicProfileAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailRetrievingPublicProfile:)]) {
+			[delegate plurk:self didFailRetrievingPublicProfile:error];
+		}
+	}	
+	
 }
 
 - (void)httpRequestDidComplete:(LFHTTPRequest *)request

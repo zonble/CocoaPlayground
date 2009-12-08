@@ -20,13 +20,10 @@
 - (void)plurk:(ObjectivePlurk *)plurk didLoggedIn:(NSDictionary *)result;
 - (void)plurk:(ObjectivePlurk *)plurk didFailLoggingIn:(NSError *)error;
 
-#pragma mark Profiles
+#pragma mark Polling
 
-- (void)plurk:(ObjectivePlurk *)plurk didRetrieveMyProfile:(NSDictionary *)result;
-- (void)plurk:(ObjectivePlurk *)plurk didFailRetrievingMyProfile:(NSError *)error;
-
-- (void)plurk:(ObjectivePlurk *)plurk didRetrievePublicProfile:(NSDictionary *)result;
-- (void)plurk:(ObjectivePlurk *)plurk didFailRetrievingPublicProfile:(NSError *)error;
+- (void)plurk:(ObjectivePlurk *)plurk didRetrievePollingMessages:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailRetrievingPollingMessages:(NSError *)error;
 
 #pragma mark Timeline
 
@@ -57,8 +54,17 @@
 - (void)plurk:(ObjectivePlurk *)plurk didEditMessage:(NSDictionary *)result;
 - (void)plurk:(ObjectivePlurk *)plurk didFailEditingMessage:(NSError *)error;
 
+#pragma mark Profiles
+
+- (void)plurk:(ObjectivePlurk *)plurk didRetrieveMyProfile:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailRetrievingMyProfile:(NSError *)error;
+
+- (void)plurk:(ObjectivePlurk *)plurk didRetrievePublicProfile:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailRetrievingPublicProfile:(NSError *)error;
 
 @end
+
+#pragma mark -
 
 typedef enum {
 	OPSmallUserProfileImageSize = 0,
@@ -73,13 +79,12 @@ typedef enum {
 	OPOnlyFriendsCanComment = 2
 } OPCanComment;
 
-
+extern NSString *ObjectivePlurkAPIURLString;
 extern NSString *ObjectivePlurkErrorDomain;
 
 extern NSString *OPLoginAction;
 
-extern NSString *OPRetrieveMyProfileAction;
-extern NSString *OPRetrievePublicProfileAction;
+extern NSString *OPRetrivePollingMessageAction;
 
 extern NSString *OPRetriveMessageAction;
 extern NSString *OPRetriveMessagesAction;
@@ -91,8 +96,13 @@ extern NSString *OPAddMessageAction;
 extern NSString *OPDeleteMessageAction;
 extern NSString *OPEditMessageAction;
 
+extern NSString *OPRetrieveMyProfileAction;
+extern NSString *OPRetrievePublicProfileAction;
+
+
 @interface ObjectivePlurk : NSObject
 {
+	NSString *APIKey;
 	LFHTTPRequest *_request;
 	NSMutableArray *_queue;
 	NSArray *_qualifiers;
@@ -113,10 +123,9 @@ extern NSString *OPEditMessageAction;
 
 - (void)loginWithUsername:(NSString *)username password:(NSString *)password delegate:(id)delegate;
 
-#pragma mark Profiles
+#pragma mark Polling
 
-- (void)retrieveMyProfileWithDelegate:(id)delegate;
-- (void)retrievePublicProfileWithUserIdentifier:(NSString *)userIdentifier delegate:(id)delegate;
+- (void)retrieveMessagesWithDateOffset:(NSDate *)offsetDate delegate:(id)delegate;
 
 #pragma mark Timeline
 
@@ -131,6 +140,12 @@ extern NSString *OPEditMessageAction;
 - (void)deleteMessageWithMessageIdentifier:(NSString *)identifer delegate:(id)delegate;
 - (void)editMessageWithMessageIdentifier:(NSString *)identifer content:(NSString *)content delegate:(id)delegate;
 
+#pragma mark Profiles
+
+- (void)retrieveMyProfileWithDelegate:(id)delegate;
+- (void)retrievePublicProfileWithUserIdentifier:(NSString *)userIdentifier delegate:(id)delegate;
+
+@property (retain, nonatomic) NSString *APIKey;
 @property (readonly) NSArray *qualifiers;
 @property (readonly) NSDictionary *langCodes;
 @property (readonly, getter=isLoggedIn) BOOL loggedIn;

@@ -7,7 +7,8 @@
 //
 
 #import "ObjectivePlurk.h"
-#import "PlurkAPI.h"
+#import "ObjectivePlurk+PrivateMethods.h"
+//#import "PlurkAPI.h"
 
 #define API_URL @"https://www.plurk.com"
 #define U8(x) [NSString stringWithUTF8String:x]
@@ -55,23 +56,7 @@ static ObjectivePlurk *sharedInstance;
 	return self;
 }
 
-- (NSString *)GETStringFromDictionary:(NSDictionary *)inDictionary
-{
-	NSMutableDictionary *d = [NSMutableDictionary dictionaryWithDictionary:inDictionary];
-	[d setValue:API_KEY forKey:@"api_key"];
-	
-	NSMutableString *s = [NSMutableString string];
-	for (NSString *key in [d allKeys]) {
-		if ([key isEqual:[[d allKeys] objectAtIndex:0]]) {
-			[s setString:@"?"];
-		}
-		[s appendFormat:@"%@=%@", key, [[d valueForKey:key] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-		if (![key isEqual:[[d allKeys] lastObject]]) {
-			[s appendString:@"&"];
-		}
-	}
-	return s;
-}
+
 
 - (void)cancelAllRequest
 {
@@ -112,34 +97,20 @@ static ObjectivePlurk *sharedInstance;
 	}
 }
 
+- (BOOL)isLoggedIn
+{
+	NSDictionary *requestHeader = [_request requestHeader];
+	if ([requestHeader valueForKey:@"Cookie"]) {
+		return YES;
+	}
+	return NO;
+}
+
 - (void)logout
 {
 	_request.requestHeader = nil;
 }
 
-- (void)addRequestWithURLPath:(NSString *)URLPath arguments:(NSDictionary *)arguments actionName:(NSString *)actionName delegate:(id)delegate
-{
-	NSString *URLString = [API_URL stringByAppendingString:URLPath];
-	URLString = [URLString stringByAppendingString:[self GETStringFromDictionary:arguments]];
-	NSURL *URL = [NSURL URLWithString:URLString];
-	NSLog(@"URL:%@", [URL description]);
-	NSDictionary *sessionInfo = [NSDictionary dictionaryWithObjectsAndKeys:actionName, @"actionName", URL, @"URL", delegate, @"delegate", nil];
-	
-	if (![_queue count] && ![_request isRunning]) {
-		NSLog(@"_request.requestHeader:%@", [_request.requestHeader description]);
-		[_request setSessionInfo:sessionInfo];
-		[_request performMethod:LFHTTPRequestGETMethod onURL:URL withData:nil];
-	}
-	
-	else {
-		if ([_queue count]) {
-			[_queue insertObject:sessionInfo atIndex:0];
-		}
-		else {
-			[_queue addObject:sessionInfo];
-		}
-	}
-}
 
 - (NSString *)imageURLStringForUser:(id)identifier size:(OPUserProfileImageSize)size hasProfileImage:(BOOL)hasProfileImage avatar:(NSString *)avatar
 {
@@ -187,21 +158,17 @@ static ObjectivePlurk *sharedInstance;
 	[self addRequestWithURLPath:@"/API/Users/login" arguments:args actionName:OPLoginAction delegate:delegate];
 }
 
-#pragma mark Profiles
+#pragma mark Polling
 
-- (void)retrieveMyProfileWithDelegate:(id)delegate
+- (void)retrieveMessagesWithDateOffset:(NSDate *)offsetDate delegate:(id)delegate
 {
-	[self addRequestWithURLPath:@"/API/Profile/getOwnProfile" arguments:nil actionName:OPRetrieveMyProfileAction delegate:delegate];
-}
-
-- (void)retrievePublicProfileWithUserIdentifier:(NSString *)userIdentifier delegate:(id)delegate
-{
-	if ([userIdentifier isKindOfClass:[NSNumber class]]) {
-		userIdentifier = [(NSNumber *)userIdentifier stringValue];
+	NSMutableDictionary *args = [NSMutableDictionary dictionary];
+	if (offsetDate) {
+		NSString *dateString = [_dateFormatter stringFromDate:offsetDate];
+		NSLog(@"dateString:%@", [dateString description]);
+		[args setValue:dateString forKey:@"offset"];
 	}
-	
-	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:userIdentifier, @"user_id", nil];
-	[self addRequestWithURLPath:@"/API/Profile/getPublicProfile" arguments:args actionName:OPRetrievePublicProfileAction delegate:delegate];	
+	[self addRequestWithURLPath:@"/API/Polling/getPlurks" arguments:args actionName:OPRetrivePollingMessageAction delegate:delegate];
 }
 
 #pragma mark Timeline
@@ -301,15 +268,24 @@ static ObjectivePlurk *sharedInstance;
 	[self addRequestWithURLPath:@"/API/Timeline/plurkEdit" arguments:args actionName:OPEditMessageAction delegate:delegate];		
 }
 
-- (BOOL)isLoggedIn
+#pragma mark Profiles
+
+- (void)retrieveMyProfileWithDelegate:(id)delegate
 {
-	NSDictionary *requestHeader = [_request requestHeader];
-	if ([requestHeader valueForKey:@"Cookie"]) {
-		return YES;
-	}
-	return NO;
+	[self addRequestWithURLPath:@"/API/Profile/getOwnProfile" arguments:nil actionName:OPRetrieveMyProfileAction delegate:delegate];
 }
 
+- (void)retrievePublicProfileWithUserIdentifier:(NSString *)userIdentifier delegate:(id)delegate
+{
+	if ([userIdentifier isKindOfClass:[NSNumber class]]) {
+		userIdentifier = [(NSNumber *)userIdentifier stringValue];
+	}
+	
+	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:userIdentifier, @"user_id", nil];
+	[self addRequestWithURLPath:@"/API/Profile/getPublicProfile" arguments:args actionName:OPRetrievePublicProfileAction delegate:delegate];	
+}
+
+@synthesize APIKey;
 @synthesize qualifiers = _qualifiers;
 @synthesize langCodes = _langCodes;
 @synthesize currentUserInfo = _currentUserInfo;

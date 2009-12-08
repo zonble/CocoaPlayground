@@ -10,6 +10,9 @@
 
 @interface ObjectivePlurk(PrivateMethods)
 
+- (NSString *)GETStringFromDictionary:(NSDictionary *)inDictionary;
+- (void)addRequestWithURLPath:(NSString *)URLPath arguments:(NSDictionary *)arguments actionName:(NSString *)actionName delegate:(id)delegate;
+
 - (void)loginDidSuccess:(LFHTTPRequest *)request;
 - (void)loginDidFail:(NSError *)error;
 - (void)commonAPIDidSuccess:(NSDictionary *)sessionInfo;
