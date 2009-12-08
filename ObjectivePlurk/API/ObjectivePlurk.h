@@ -73,6 +73,32 @@
 - (void)plurk:(ObjectivePlurk *)plurk didRetrievePublicProfile:(NSDictionary *)result;
 - (void)plurk:(ObjectivePlurk *)plurk didFailRetrievingPublicProfile:(NSError *)error;
 
+#pragma mark Friends and fans
+
+- (void)plurk:(ObjectivePlurk *)plurk didRetrieveFriends:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailRetrievingFriends:(NSError *)error;
+
+- (void)plurk:(ObjectivePlurk *)plurk didRetrieveFans:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailRetrievingFans:(NSError *)error;
+
+- (void)plurk:(ObjectivePlurk *)plurk didRetrieveFollowingUsers:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailRetrievingFollowingUsers:(NSError *)error;
+
+- (void)plurk:(ObjectivePlurk *)plurk didBecomeFriend:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailBecomingFriend:(NSError *)error;
+
+- (void)plurk:(ObjectivePlurk *)plurk didRemoveFriendship:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailRemovingFriendship:(NSError *)error;
+
+- (void)plurk:(ObjectivePlurk *)plurk didBecomeFan:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailBecomingFan:(NSError *)error;
+
+- (void)plurk:(ObjectivePlurk *)plurk didSetFollowingUser:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailSettingFollowingUser:(NSError *)error;
+
+- (void)plurk:(ObjectivePlurk *)plurk didRetrieveFriendsCompletionList:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didRetrievingFriendsCompletionList:(NSError *)error;
+
 @end
 
 #pragma mark -
@@ -114,6 +140,14 @@ extern NSString *OPDeleteResponsesAction;
 extern NSString *OPRetrieveMyProfileAction;
 extern NSString *OPRetrievePublicProfileAction;
 
+extern NSString *OPRetriveFriendAction;
+extern NSString *OPRetriveFansAction;
+extern NSString *OPRetriveFollowingAction;
+extern NSString *OPBecomeFriendAction;
+extern NSString *OPRemoveFriendshipAction;
+extern NSString *OPBecomeFanAction;
+extern NSString *OPSetFollowingAction;
+extern NSString *OPRetrieveFriendsCompletionListAction;
 
 @interface ObjectivePlurk : NSObject
 {
@@ -165,6 +199,18 @@ extern NSString *OPRetrievePublicProfileAction;
 
 - (void)retrieveMyProfileWithDelegate:(id)delegate;
 - (void)retrievePublicProfileWithUserIdentifier:(NSString *)userIdentifier delegate:(id)delegate;
+
+#pragma mark Friends and fans
+
+- (void)retrieveFriendsOfUser:(NSString *)userIdentifier offset:(NSUInteger)offset delegate:(id)delegate;
+- (void)retrieveFansOfUser:(NSString *)userIdentifier offset:(NSUInteger)offset delegate:(id)delegate;
+- (void)retrieveFollowingUsersOfCurrentUserWithOffset:(NSUInteger)offset delegate:(id)delegate;
+- (void)becomeFriendOfUser:(NSString *)userIdentifier delegate:(id)delegate;
+- (void)removeFriendshipWithUser:(NSString *)userIdentifier delegate:(id)delegate;
+- (void)becomeFanOfUser:(NSString *)userIdentifier delegate:(id)delegate;
+- (void)setFollowingUser:(NSString *)userIdentifier follow:(BOOL)follow delegate:(id)delegate;
+- (void)retrieveFriendsCompletionList:(id)delegate;
+
 
 @property (retain, nonatomic) NSString *APIKey;
 @property (readonly) NSArray *qualifiers;

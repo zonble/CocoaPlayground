@@ -11,27 +11,35 @@
 NSString *ObjectivePlurkAPIURLString = @"https://www.plurk.com";
 NSString *ObjectivePlurkErrorDomain = @"ObjectivePlurkErrorDomain";
 
-NSString *OPLoginAction = @"OPLoginAction";
+NSString *OPLoginAction = @"/API/Users/login";
 
-NSString *OPRetrivePollingMessageAction = @"OPRetrivePollingMessageAction";
+NSString *OPRetrivePollingMessageAction = @"/API/Polling/getPlurks";
 
-NSString *OPRetriveMessageAction = @"OPRetriveMessageAction";
-NSString *OPRetriveMessagesAction = @"OPRetriveMessagesAction";
-NSString *OPRetriveUnreadMessagesAction = @"OPRetriveUnreadMessagesAction";
-NSString *OPMuteMessagesAction = @"OPMuteMessagesAction";
-NSString *OPUnmuteMessagesAction = @"OPUnmuteMessagesAction";
-NSString *OPMarkMessageAsReadAction = @"OPMarkMessageAsReadAction";
-NSString *OPAddMessageAction = @"OPAddMessageAction";
-NSString *OPDeleteMessageAction = @"OPDeleteMessageAction";
-NSString *OPEditMessageAction = @"OPEditMessageAction";
+NSString *OPRetriveMessageAction = @"/API/Timeline/getPlurk";
+NSString *OPRetriveMessagesAction = @"/API/Timeline/getPlurks";
+NSString *OPRetriveUnreadMessagesAction = @"/API/Timeline/getUnreadPlurks";
+NSString *OPMuteMessagesAction = @"/API/Timeline/mutePlurks";
+NSString *OPUnmuteMessagesAction = @"/API/Timeline/unmutePlurks";
+NSString *OPMarkMessageAsReadAction = @"/API/Timeline/markAsRead";
+NSString *OPAddMessageAction = @"/API/Timeline/plurkAdd";
+NSString *OPDeleteMessageAction = @"/API/Timeline/plurkDelete";
+NSString *OPEditMessageAction = @"/API/Timeline/plurkEdit";
 
-NSString *OPRetriveResponsesAction = @"OPRetriveResponsesAction";
-NSString *OPAddResponsesAction = @"OPAddResponsesAction";
-NSString *OPDeleteResponsesAction = @"OPDeleteResponsesAction";
+NSString *OPRetriveResponsesAction = @"/API/Responses/get";
+NSString *OPAddResponsesAction = @"/API/Responses/responseAdd";
+NSString *OPDeleteResponsesAction = @"/API/Timeline/responseDelete";
 
-NSString *OPRetrieveMyProfileAction = @"OPRetrieveMyProfileAction";
-NSString *OPRetrievePublicProfileAction = @"OPRetrievePublicProfileAction";
+NSString *OPRetrieveMyProfileAction = @"/API/Profile/getOwnProfile";
+NSString *OPRetrievePublicProfileAction = @"/API/Profile/getPublicProfile";
 
+NSString *OPRetriveFriendAction = @"/API/FriendsFans/getFriendsByOffset";
+NSString *OPRetriveFansAction = @"/API/FriendsFans/getFansByOffset";
+NSString *OPRetriveFollowingAction = @"/API/FriendsFans/getFollowingByOffset";
+NSString *OPBecomeFriendAction = @"/API/FriendsFans/becomeFriend";
+NSString *OPRemoveFriendshipAction = @"/API/FriendsFans/becomeFriend";
+NSString *OPBecomeFanAction = @"/API/FriendsFans/becomeFan";
+NSString *OPSetFollowingAction = @"/API/FriendsFans/setFollowing";
+NSString *OPRetrieveFriendsCompletionListAction = @"/API/FriendsFans/getCompletion";
 
 @implementation ObjectivePlurk(PrivateMethods)
 
@@ -53,9 +61,9 @@ NSString *OPRetrievePublicProfileAction = @"OPRetrievePublicProfileAction";
 	return s;
 }
 
-- (void)addRequestWithURLPath:(NSString *)URLPath arguments:(NSDictionary *)arguments actionName:(NSString *)actionName delegate:(id)delegate
+- (void)addRequestWithAction:(NSString *)actionName arguments:(NSDictionary *)arguments delegate:(id)delegate
 {
-	NSString *URLString = [ObjectivePlurkAPIURLString stringByAppendingString:URLPath];
+	NSString *URLString = [ObjectivePlurkAPIURLString stringByAppendingString:actionName];
 	URLString = [URLString stringByAppendingString:[self GETStringFromDictionary:arguments]];
 	NSURL *URL = [NSURL URLWithString:URLString];
 	NSLog(@"URL:%@", [URL description]);
@@ -201,8 +209,7 @@ NSString *OPRetrievePublicProfileAction = @"OPRetrievePublicProfileAction";
 		if ([delegate respondsToSelector:@selector(plurk:didDeleteResponse:)]) {
 			[delegate plurk:self didDeleteResponse:result];
 		}
-	}
-	
+	}	
 	else if ([actionName isEqualToString:OPRetrieveMyProfileAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didRetrieveMyProfile:)]) {
 			[delegate plurk:self didRetrieveMyProfile:result];
@@ -213,7 +220,46 @@ NSString *OPRetrievePublicProfileAction = @"OPRetrievePublicProfileAction";
 			[delegate plurk:self didRetrievePublicProfile:result];
 		}
 	}	
-	
+	else if ([actionName isEqualToString:OPRetriveFriendAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didRetrieveFriends:)]) {
+			[delegate plurk:self didRetrieveFriends:result];
+		}
+	}	
+	else if ([actionName isEqualToString:OPRetriveFansAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didRetrieveFans:)]) {
+			[delegate plurk:self didRetrieveFans:result];
+		}
+	}	
+	else if ([actionName isEqualToString:OPRetriveFollowingAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didRetrieveFollowingUsers:)]) {
+			[delegate plurk:self didRetrieveFollowingUsers:result];
+		}
+	}	
+	else if ([actionName isEqualToString:OPBecomeFriendAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didBecomeFriend:)]) {
+			[delegate plurk:self didBecomeFriend:result];
+		}
+	}	
+	else if ([actionName isEqualToString:OPRemoveFriendshipAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didRemoveFriendship:)]) {
+			[delegate plurk:self didRemoveFriendship:result];
+		}
+	}	
+	else if ([actionName isEqualToString:OPBecomeFanAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didBecomeFan:)]) {
+			[delegate plurk:self didBecomeFan:result];
+		}
+	}	
+	else if ([actionName isEqualToString:OPSetFollowingAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didSetFollowingUser:)]) {
+			[delegate plurk:self didSetFollowingUser:result];
+		}
+	}	
+	else if ([actionName isEqualToString:OPRetrieveFriendsCompletionListAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didRetrieveFriendsCompletionList:)]) {
+			[delegate plurk:self didRetrieveFriendsCompletionList:result];
+		}
+	}	
 
 }
 
@@ -289,8 +335,6 @@ NSString *OPRetrievePublicProfileAction = @"OPRetrievePublicProfileAction";
 			[delegate plurk:self didFailDeletingResponse:error];
 		}
 	}
-	
-	
 	else if ([actionName isEqualToString:OPRetrieveMyProfileAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didFailRetrievingMyProfile:)]) {
 			[delegate plurk:self didFailRetrievingMyProfile:error];
@@ -300,8 +344,48 @@ NSString *OPRetrievePublicProfileAction = @"OPRetrievePublicProfileAction";
 		if ([delegate respondsToSelector:@selector(plurk:didFailRetrievingPublicProfile:)]) {
 			[delegate plurk:self didFailRetrievingPublicProfile:error];
 		}
-	}	
+	}
 	
+	else if ([actionName isEqualToString:OPRetriveFriendAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailRetrievingFriends:)]) {
+			[delegate plurk:self didFailRetrievingFriends:error];
+		}
+	}	
+	else if ([actionName isEqualToString:OPRetriveFansAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailRetrievingFans:)]) {
+			[delegate plurk:self didFailRetrievingFans:error];
+		}
+	}	
+	else if ([actionName isEqualToString:OPRetriveFollowingAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailRetrievingFollowingUsers:)]) {
+			[delegate plurk:self didFailRetrievingFollowingUsers:error];
+		}
+	}	
+	else if ([actionName isEqualToString:OPBecomeFriendAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailBecomingFriend:)]) {
+			[delegate plurk:self didFailBecomingFriend:error];
+		}
+	}	
+	else if ([actionName isEqualToString:OPRemoveFriendshipAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailRemovingFriendship:)]) {
+			[delegate plurk:self didFailRemovingFriendship:error];
+		}
+	}	
+	else if ([actionName isEqualToString:OPBecomeFanAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailBecomingFan:)]) {
+			[delegate plurk:self didFailBecomingFan:error];
+		}
+	}	
+	else if ([actionName isEqualToString:OPSetFollowingAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailSettingFollowingUser:)]) {
+			[delegate plurk:self didFailSettingFollowingUser:error];
+		}
+	}	
+	else if ([actionName isEqualToString:OPRetrieveFriendsCompletionListAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didRetrievingFriendsCompletionList:)]) {
+			[delegate plurk:self didRetrievingFriendsCompletionList:error];
+		}
+	}
 }
 
 - (void)httpRequestDidComplete:(LFHTTPRequest *)request

@@ -32,6 +32,7 @@
     [window makeKeyAndVisible];
 	
 	ObjectivePlurk *plurk = [ObjectivePlurk sharedInstance];
+	plurk.APIKey = API_KEY;
 	[plurk loginWithUsername:ACCOUNT password:PASSWD delegate:self];
 }
 
