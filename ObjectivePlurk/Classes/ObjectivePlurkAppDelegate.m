@@ -54,14 +54,28 @@
 //	NSLog(@"result:%@", [result description]);
 //	[plurk retrieveMyProfileWithDelegate:self];
 //	[plurk retrievePublicProfileWithUserIdentifier:@"3291538" delegate:self];
-	[plurk retrieveMessagesWithDateOffset:nil limit:20 user:nil isResponded:NO isPrivate:NO delegate:self];
-	
+//	[plurk retrieveMessagesWithDateOffset:nil limit:20 user:nil isResponded:NO isPrivate:NO delegate:self];
+	NSString *file = [[NSBundle mainBundle] pathForResource:@"priyanka" ofType:@"jpeg"];
+	[plurk updatePictureWithFile:file delegate:self];
 }
 - (void)plurk:(ObjectivePlurk *)plurk didFailLoggingIn:(NSError *)error
 {
 	NSLog(@"%s", __PRETTY_FUNCTION__);
 	NSLog(@"error:%@", [error description]);
 }
+
+
+- (void)plurk:(ObjectivePlurk *)plurk didUpdatePicture:(NSDictionary *)result
+{
+	NSLog(@"%s", __PRETTY_FUNCTION__);
+	NSLog(@"result:%@", [result description]);
+}
+- (void)plurk:(ObjectivePlurk *)plurk didFailUpdatingPicture:(NSError *)error
+{
+	NSLog(@"%s", __PRETTY_FUNCTION__);
+	NSLog(@"error:%@", [error description]);
+}
+
 
 - (void)plurk:(ObjectivePlurk *)plurk didRetrieveMessages:(NSDictionary *)result
 {

@@ -151,6 +151,11 @@ static ObjectivePlurk *sharedInstance;
 	[self addRequestWithAction:OPLoginAction arguments:args delegate:delegate];
 }
 
+- (void)updatePictureWithFile:(NSString *)path delegate:(id)delegate
+{
+	[self addRequestWithAction:OPUpdatePictureAction arguments:nil filepath:path delegate:delegate];
+}
+
 - (void)updateProfileWithOldPassword:(NSString *)oldPassword fullname:(NSString *)fullname newPassword:(NSString *)newPassword email:(NSString *)email displayName:(NSString *)displayName privacy:(OPPrivacy)privacy dateOfBirth:(NSString *)dateOfBirth delegate:(id)delegate
 {
 	NSMutableDictionary *args = [NSMutableDictionary dictionary];	

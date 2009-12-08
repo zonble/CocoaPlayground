@@ -20,6 +20,9 @@
 - (void)plurk:(ObjectivePlurk *)plurk didLoggedIn:(NSDictionary *)result;
 - (void)plurk:(ObjectivePlurk *)plurk didFailLoggingIn:(NSError *)error;
 
+- (void)plurk:(ObjectivePlurk *)plurk didUpdatePicture:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailUpdatingPicture:(NSError *)error;
+
 - (void)plurk:(ObjectivePlurk *)plurk didUpdateProfile:(NSDictionary *)result;
 - (void)plurk:(ObjectivePlurk *)plurk didFailUpdatingProfile:(NSError *)error;
 
@@ -217,6 +220,7 @@ extern NSString *const OPAlertFriendshipAcceptedType;
 extern NSString *const OPAlertNewFriendType;
 
 extern NSString *const OPLoginAction;
+extern NSString *const OPUpdatePictureAction;
 extern NSString *const OPUpdateProfileAction;
 
 extern NSString *const OPRetrivePollingMessageAction;
@@ -297,6 +301,7 @@ extern NSString *const OPRemoveUserFromCliqueAction;
 #pragma mark Users
 
 - (void)loginWithUsername:(NSString *)username password:(NSString *)password delegate:(id)delegate;
+- (void)updatePictureWithFile:(NSString *)path delegate:(id)delegate;
 - (void)updateProfileWithOldPassword:(NSString *)oldPassword fullname:(NSString *)fullname newPassword:(NSString *)newPassword email:(NSString *)email displayName:(NSString *)displayName privacy:(OPPrivacy)privacy dateOfBirth:(NSString *)dateOfBirth delegate:(id)delegate;
 
 #pragma mark Polling

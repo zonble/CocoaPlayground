@@ -20,6 +20,7 @@ NSString *const OPAlertFriendshipAcceptedType = @"friendship_accepted";
 NSString *const OPAlertNewFriendType = @"new_friend";
 
 NSString *const OPLoginAction = @"/API/Users/login";
+NSString *const OPUpdatePictureAction = @"/API/Users/updatePicture";
 NSString *const OPUpdateProfileAction = @"/API/Users/update";
 
 NSString *const OPRetrivePollingMessageAction = @"/API/Polling/getPlurks";
@@ -107,9 +108,13 @@ NSString *mimeTypeForExtension(NSString *ext)
 			mimeType = @"audio/x-m4p";
 		}
     }
+	else {
+		mimeType = (NSString *)registeredType;
+		[mimeType autorelease];
+	}
 	
     CFRelease(UTI);
-    return [mimeType autorelease];
+    return mimeType;
 }
 
 
@@ -240,10 +245,10 @@ NSString *mimeTypeForExtension(NSString *ext)
 	URLString = [URLString stringByAppendingString:[self GETStringFromDictionary:arguments]];
 	NSURL *URL = [NSURL URLWithString:URLString];
 	NSLog(@"URL:%@", [URL description]);
-	NSDictionary *sessionInfo = [NSDictionary dictionaryWithObjectsAndKeys:actionName, @"actionName", arguments, @"arguments", URL, @"URL", delegate, @"delegate", nil];
+	NSDictionary *sessionInfo = [NSDictionary dictionaryWithObjectsAndKeys:actionName, @"actionName", URL, @"URL", delegate, @"delegate", arguments, @"arguments", nil];
 	
 	if (filepath) {
-		[self cancelAllRequest];
+		[_request cancelWithoutDelegateMessage];
 		[self uploadFile:filepath suggestedFilename:[filepath lastPathComponent] requestURL:URL multipartName:@"profile_image" sessionInfo:sessionInfo];
 	}	
 	else if (![_queue count] && ![_request isRunning]) {
@@ -326,7 +331,12 @@ NSString *mimeTypeForExtension(NSString *ext)
 	id delegate = [sessionInfo valueForKey:@"delegate"];	
 	NSString *actionName = [sessionInfo valueForKey:@"actionName"];	
 
-	if ([actionName isEqualToString:OPUpdateProfileAction]) {
+	if ([actionName isEqualToString:OPUpdatePictureAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didUpdatePicture:)]) {
+			[delegate plurk:self didUpdatePicture:result];
+		}
+	}		
+	else if ([actionName isEqualToString:OPUpdateProfileAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didUpdateProfile:)]) {
 			[delegate plurk:self didUpdateProfile:result];
 		}
@@ -563,12 +573,17 @@ NSString *mimeTypeForExtension(NSString *ext)
 
 	NSString *actionName = [sessionInfo valueForKey:@"actionName"];
 
-	if ([actionName isEqualToString:OPUpdateProfileAction]) {
+	if ([actionName isEqualToString:OPUpdatePictureAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailUpdatingPicture:)]) {
+			[delegate plurk:self didFailUpdatingPicture:error];
+		}
+	}
+	else if ([actionName isEqualToString:OPUpdateProfileAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didFailUpdatingProfile:)]) {
 			[delegate plurk:self didFailUpdatingProfile:error];
 		}
-	}		
-	if ([actionName isEqualToString:OPRetrivePollingMessageAction]) {
+	}
+	else if ([actionName isEqualToString:OPRetrivePollingMessageAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didFailRetrievingPollingMessages:)]) {
 			[delegate plurk:self didFailRetrievingPollingMessages:error];
 		}
@@ -839,6 +854,10 @@ NSString *mimeTypeForExtension(NSString *ext)
 		[self commonAPIDidSuccess:sessionInfoWithResult];
 	}
 	[self runQueue];
+}
+- (void)httpRequest:(LFHTTPRequest *)request sentBytes:(NSUInteger)bytesSent total:(NSUInteger)total
+{
+	NSLog(@"bytesSent/total:%d/%d", bytesSent, total);
 }
 
 

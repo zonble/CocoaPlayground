@@ -8,8 +8,7 @@
 
 #import "ObjectivePlurk.h"
 
-#if !TARGET_OS_IPHONE
-#else
+#if TARGET_OS_IPHONE
 #import <MobileCoreServices/MobileCoreServices.h>
 #endif
 
@@ -18,6 +17,7 @@
 
 - (NSString *)GETStringFromDictionary:(NSDictionary *)inDictionary;
 - (void)runQueue;
+- (void)addRequestWithAction:(NSString *)actionName arguments:(NSDictionary *)arguments filepath:(NSString *)filepath delegate:(id)delegate;
 - (void)addRequestWithAction:(NSString *)actionName arguments:(NSDictionary *)arguments delegate:(id)delegate;
 
 - (void)loginDidSuccess:(LFHTTPRequest *)request;
