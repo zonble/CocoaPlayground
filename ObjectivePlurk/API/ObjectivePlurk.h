@@ -97,7 +97,35 @@
 - (void)plurk:(ObjectivePlurk *)plurk didFailSettingFollowingUser:(NSError *)error;
 
 - (void)plurk:(ObjectivePlurk *)plurk didRetrieveFriendsCompletionList:(NSDictionary *)result;
-- (void)plurk:(ObjectivePlurk *)plurk didRetrievingFriendsCompletionList:(NSError *)error;
+- (void)plurk:(ObjectivePlurk *)plurk didFailRetrievingFriendsCompletionList:(NSError *)error;
+
+
+#pragma mark Alerts
+
+- (void)plurk:(ObjectivePlurk *)plurk didRetriveActiveAlerts:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailRetrivingActiveAlerts:(NSError *)error;
+
+- (void)plurk:(ObjectivePlurk *)plurk didRetriveHistory:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailRetrivingHistory:(NSError *)error;
+
+- (void)plurk:(ObjectivePlurk *)plurk didAddAsFan:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailAddingAsFan:(NSError *)error;
+
+- (void)plurk:(ObjectivePlurk *)plurk didAddAllAsFan:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailAddingAllAsFan:(NSError *)error;
+
+- (void)plurk:(ObjectivePlurk *)plurk didAddAsFriend:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailAddingAsFriend:(NSError *)error;
+
+- (void)plurk:(ObjectivePlurk *)plurk didAddAllAsFriend:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailAddingAllAsFriend:(NSError *)error;
+
+- (void)plurk:(ObjectivePlurk *)plurk didDenyFriendship:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailDenyingFriendship:(NSError *)error;
+
+- (void)plurk:(ObjectivePlurk *)plurk didRemoveNotification:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailRemovingNotification:(NSError *)error;
+
 
 @end
 
@@ -118,6 +146,12 @@ typedef enum {
 
 extern NSString *ObjectivePlurkAPIURLString;
 extern NSString *ObjectivePlurkErrorDomain;
+
+extern NSString *OPAlertFriendshipRequestType;
+extern NSString *OPAlertFriendshipPendingType;
+extern NSString *OPAlertNewFanType;
+extern NSString *OPAlertFriendshipAcceptedType;
+extern NSString *OPAlertNewFriendType;
 
 extern NSString *OPLoginAction;
 
@@ -148,6 +182,15 @@ extern NSString *OPRemoveFriendshipAction;
 extern NSString *OPBecomeFanAction;
 extern NSString *OPSetFollowingAction;
 extern NSString *OPRetrieveFriendsCompletionListAction;
+
+extern NSString *OPRetriveActiveAlertsAction;
+extern NSString *OPRetriveHistoryAction;
+extern NSString *OPAddAsFanAction;
+extern NSString *OPAddAllAsFanAction;
+extern NSString *OPAddAsFriendAction;
+extern NSString *OPAddAllAsFriendAction;
+extern NSString *OPDenyFriendshipAction;
+extern NSString *OPRemoveNotificationAction;
 
 @interface ObjectivePlurk : NSObject
 {
@@ -211,6 +254,16 @@ extern NSString *OPRetrieveFriendsCompletionListAction;
 - (void)setFollowingUser:(NSString *)userIdentifier follow:(BOOL)follow delegate:(id)delegate;
 - (void)retrieveFriendsCompletionList:(id)delegate;
 
+#pragma mark Alerts
+
+- (void)retriveActiveAlertsWithDelegate:(id)delegate;
+- (void)retrivetHistoryWithDelegate:(id)delegate;
+- (void)addAsFanWithUserIdentifier:(NSString *)userIdentifier delegate:(id)delegate;
+- (void)addAllAsFanWithDelegate:(id)delegate;
+- (void)addAsFriendWithUserIdentifier:(NSString *)userIdentifier delegate:(id)delegate;
+- (void)addAllAsFriendWithDelegate:(id)delegate;
+- (void)denyFriendshipWithUserIdentifier:(NSString *)userIdentifier delegate:(id)delegate;
+- (void)removeNotificationWithDelegate:(id)delegate;
 
 @property (retain, nonatomic) NSString *APIKey;
 @property (readonly) NSArray *qualifiers;

@@ -387,6 +387,61 @@ static ObjectivePlurk *sharedInstance;
 	[self addRequestWithAction:OPRetrieveFriendsCompletionListAction arguments:nil delegate:delegate];
 }
 
+#pragma mark Alerts
+
+- (void)retriveActiveAlertsWithDelegate:(id)delegate
+{
+	[self addRequestWithAction:OPRetriveActiveAlertsAction arguments:nil delegate:delegate];
+}
+
+- (void)retrivetHistoryWithDelegate:(id)delegate
+{
+	[self addRequestWithAction:OPRetriveHistoryAction arguments:nil delegate:delegate];
+}
+
+- (void)addAsFanWithUserIdentifier:(NSString *)userIdentifier delegate:(id)delegate
+{
+	if ([userIdentifier isKindOfClass:[NSNumber class]]) {
+		userIdentifier = [(NSNumber *)userIdentifier stringValue];
+	}
+	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:userIdentifier, @"user_id", nil];
+	[self addRequestWithAction:OPAddAsFanAction arguments:args delegate:delegate];	
+}
+
+- (void)addAllAsFanWithDelegate:(id)delegate
+{
+	[self addRequestWithAction:OPAddAllAsFanAction arguments:nil delegate:delegate];
+}
+
+- (void)addAsFriendWithUserIdentifier:(NSString *)userIdentifier delegate:(id)delegate
+{
+	if ([userIdentifier isKindOfClass:[NSNumber class]]) {
+		userIdentifier = [(NSNumber *)userIdentifier stringValue];
+	}
+	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:userIdentifier, @"user_id", nil];
+	[self addRequestWithAction:OPAddAsFriendAction arguments:args delegate:delegate];		
+}
+
+- (void)addAllAsFriendWithDelegate:(id)delegate
+{
+	[self addRequestWithAction:OPAddAllAsFriendAction arguments:nil delegate:delegate];
+}
+
+- (void)denyFriendshipWithUserIdentifier:(NSString *)userIdentifier delegate:(id)delegate
+{
+	if ([userIdentifier isKindOfClass:[NSNumber class]]) {
+		userIdentifier = [(NSNumber *)userIdentifier stringValue];
+	}
+	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:userIdentifier, @"user_id", nil];
+	[self addRequestWithAction:OPDenyFriendshipAction arguments:args delegate:delegate];	
+}
+
+- (void)removeNotificationWithDelegate:(id)delegate
+{
+	[self addRequestWithAction:OPRemoveNotificationAction arguments:nil delegate:delegate];
+}
+
+
 @synthesize APIKey;
 @synthesize qualifiers = _qualifiers;
 @synthesize langCodes = _langCodes;

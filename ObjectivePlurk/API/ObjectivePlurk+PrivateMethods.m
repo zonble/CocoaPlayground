@@ -11,6 +11,12 @@
 NSString *ObjectivePlurkAPIURLString = @"https://www.plurk.com";
 NSString *ObjectivePlurkErrorDomain = @"ObjectivePlurkErrorDomain";
 
+NSString *OPAlertFriendshipRequestType = @"friendship_request";
+NSString *OPAlertFriendshipPendingType = @"friendship_pending";
+NSString *OPAlertNewFanType = @"new_fan";
+NSString *OPAlertFriendshipAcceptedType = @"friendship_accepted";
+NSString *OPAlertNewFriendType = @"new_friend";
+
 NSString *OPLoginAction = @"/API/Users/login";
 
 NSString *OPRetrivePollingMessageAction = @"/API/Polling/getPlurks";
@@ -40,6 +46,15 @@ NSString *OPRemoveFriendshipAction = @"/API/FriendsFans/becomeFriend";
 NSString *OPBecomeFanAction = @"/API/FriendsFans/becomeFan";
 NSString *OPSetFollowingAction = @"/API/FriendsFans/setFollowing";
 NSString *OPRetrieveFriendsCompletionListAction = @"/API/FriendsFans/getCompletion";
+
+NSString *OPRetriveActiveAlertsAction = @"/API/Alerts/getActive";
+NSString *OPRetriveHistoryAction = @"/API/Alerts/getHistory";
+NSString *OPAddAsFanAction = @"/API/Alerts/addAsFan";
+NSString *OPAddAllAsFanAction = @"/API/Alerts/addAllAsFan";
+NSString *OPAddAsFriendAction = @"/API/Alerts/addAsFriend";
+NSString *OPAddAllAsFriendAction = @"/API/Alerts/addAllAsFriends";
+NSString *OPDenyFriendshipAction = @"/API/Alerts/denyFriendship";
+NSString *OPRemoveNotificationAction = @"/API/Alerts/removeNotification";
 
 @implementation ObjectivePlurk(PrivateMethods)
 
@@ -259,8 +274,48 @@ NSString *OPRetrieveFriendsCompletionListAction = @"/API/FriendsFans/getCompleti
 		if ([delegate respondsToSelector:@selector(plurk:didRetrieveFriendsCompletionList:)]) {
 			[delegate plurk:self didRetrieveFriendsCompletionList:result];
 		}
+	}
+	else if ([actionName isEqualToString:OPRetriveActiveAlertsAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didRetriveActiveAlerts:)]) {
+			[delegate plurk:self didRetriveActiveAlerts:result];
+		}
 	}	
-
+	else if ([actionName isEqualToString:OPRetriveHistoryAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didRetriveHistory:)]) {
+			[delegate plurk:self didRetriveHistory:result];
+		}
+	}	
+	else if ([actionName isEqualToString:OPAddAsFanAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didAddAsFan:)]) {
+			[delegate plurk:self didAddAsFan:result];
+		}
+	}	
+	else if ([actionName isEqualToString:OPAddAllAsFanAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didAddAllAsFan:)]) {
+			[delegate plurk:self didAddAllAsFan:result];
+		}
+	}
+	else if ([actionName isEqualToString:OPAddAsFriendAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didAddAsFriend:)]) {
+			[delegate plurk:self didAddAsFriend:result];
+		}
+	}	
+	else if ([actionName isEqualToString:OPAddAllAsFriendAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didAddAllAsFriend:)]) {
+			[delegate plurk:self didAddAllAsFriend:result];
+		}
+	}	
+	else if ([actionName isEqualToString:OPDenyFriendshipAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didDenyFriendship:)]) {
+			[delegate plurk:self didDenyFriendship:result];
+		}
+	}	
+	else if ([actionName isEqualToString:OPRemoveNotificationAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didRemoveNotification:)]) {
+			[delegate plurk:self didRemoveNotification:result];
+		}
+	}
+	
 }
 
 - (void)commonAPIDidFail:(NSError *)error
@@ -382,10 +437,51 @@ NSString *OPRetrieveFriendsCompletionListAction = @"/API/FriendsFans/getCompleti
 		}
 	}	
 	else if ([actionName isEqualToString:OPRetrieveFriendsCompletionListAction]) {
-		if ([delegate respondsToSelector:@selector(plurk:didRetrievingFriendsCompletionList:)]) {
-			[delegate plurk:self didRetrievingFriendsCompletionList:error];
+		if ([delegate respondsToSelector:@selector(plurk:didFailRetrievingFriendsCompletionList:)]) {
+			[delegate plurk:self didFailRetrievingFriendsCompletionList:error];
 		}
 	}
+	else if ([actionName isEqualToString:OPRetriveActiveAlertsAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailRetrivingActiveAlerts:)]) {
+			[delegate plurk:self didFailRetrivingActiveAlerts:error];
+		}
+	}	
+	else if ([actionName isEqualToString:OPRetriveHistoryAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailRetrivingHistory:)]) {
+			[delegate plurk:self didFailRetrivingHistory:error];
+		}
+	}	
+	else if ([actionName isEqualToString:OPAddAsFanAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailAddingAsFan:)]) {
+			[delegate plurk:self didFailAddingAsFan:error];
+		}
+	}	
+	else if ([actionName isEqualToString:OPAddAllAsFanAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailAddingAllAsFan:)]) {
+			[delegate plurk:self didFailAddingAllAsFan:error];
+		}
+	}
+	else if ([actionName isEqualToString:OPAddAsFriendAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailAddingAsFriend:)]) {
+			[delegate plurk:self didFailAddingAsFriend:error];
+		}
+	}	
+	else if ([actionName isEqualToString:OPAddAllAsFriendAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailAddingAllAsFriend:)]) {
+			[delegate plurk:self didFailAddingAllAsFriend:error];
+		}
+	}	
+	else if ([actionName isEqualToString:OPDenyFriendshipAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailDenyingFriendship:)]) {
+			[delegate plurk:self didFailDenyingFriendship:error];
+		}
+	}	
+	else if ([actionName isEqualToString:OPRemoveNotificationAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailRemovingNotification:)]) {
+			[delegate plurk:self didFailRemovingNotification:error];
+		}
+	}
+	
 }
 
 - (void)httpRequestDidComplete:(LFHTTPRequest *)request
