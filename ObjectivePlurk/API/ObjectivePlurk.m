@@ -465,6 +465,39 @@ static ObjectivePlurk *sharedInstance;
 	[self addRequestWithAction:OPSearchUsersAction arguments:nil delegate:delegate];	
 }
 
+#pragma mark Emoticons
+
+- (void)retriveEmoticonsWithDelegate:(id)delegate
+{
+	[self addRequestWithAction:OPRetrieveEmoticonsAction arguments:nil delegate:delegate];
+}
+
+#pragma mark Blocks
+
+- (void)retrieveBlockedUsersWithDelegate:(id)delegate
+{
+	[self addRequestWithAction:OPRetrieveBlockedUsersAction arguments:nil delegate:delegate];
+}
+
+- (void)blockUser:(NSString *)userIdentifier delegate:(id)delegate
+{
+	if ([userIdentifier isKindOfClass:[NSNumber class]]) {
+		userIdentifier = [(NSNumber *)userIdentifier stringValue];
+	}
+	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:userIdentifier, @"user_id", nil];
+	[self addRequestWithAction:OPBlockuUserAction arguments:args delegate:delegate];		
+}
+
+- (void)unblockUser:(NSString *)userIdentifier delegate:(id)delegate
+{
+	if ([userIdentifier isKindOfClass:[NSNumber class]]) {
+		userIdentifier = [(NSNumber *)userIdentifier stringValue];
+	}
+	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:userIdentifier, @"user_id", nil];
+	[self addRequestWithAction:OPUnblockuUserAction arguments:args delegate:delegate];	
+}
+
+
 
 
 @synthesize APIKey;

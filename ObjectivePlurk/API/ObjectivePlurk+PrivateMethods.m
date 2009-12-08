@@ -59,6 +59,12 @@ NSString *OPRemoveNotificationAction = @"/API/Alerts/removeNotification";
 NSString *OPSearchMessagesAction = @"/API/PlurkSearch/search";
 NSString *OPSearchUsersAction = @"/API/UserSearch/search";
 
+NSString *OPRetrieveEmoticonsAction = @"/API/Emoticons/get";
+
+NSString *OPRetrieveBlockedUsersAction = @"/API/Blocks/get";
+NSString *OPBlockuUserAction = @"/API/Blocks/block";
+NSString *OPUnblockuUserAction = @"/API/Blocks/unblock";
+
 
 @implementation ObjectivePlurk(PrivateMethods)
 
@@ -329,6 +335,27 @@ NSString *OPSearchUsersAction = @"/API/UserSearch/search";
 			[delegate plurk:self didSearchUsers:result];
 		}
 	}
+	else if ([actionName isEqualToString:OPRetrieveEmoticonsAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didRetrieveEmoticons:)]) {
+			[delegate plurk:self didRetrieveEmoticons:result];
+		}
+	}
+	else if ([actionName isEqualToString:OPRetrieveBlockedUsersAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didRetrieveBlockedUsers:)]) {
+			[delegate plurk:self didRetrieveBlockedUsers:result];
+		}
+	}	
+	else if ([actionName isEqualToString:OPBlockuUserAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didBlockUser:)]) {
+			[delegate plurk:self didBlockUser:result];
+		}
+	}	
+	else if ([actionName isEqualToString:OPUnblockuUserAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didUnblockUser:)]) {
+			[delegate plurk:self didUnblockUser:result];
+		}
+	}	
+	
 	
 	
 }
@@ -504,6 +531,26 @@ NSString *OPSearchUsersAction = @"/API/UserSearch/search";
 	else if ([actionName isEqualToString:OPSearchUsersAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didFailSearchingUsers:)]) {
 			[delegate plurk:self didFailSearchingUsers:error];
+		}
+	}
+	else if ([actionName isEqualToString:OPRetrieveEmoticonsAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailRetrievingEmoticons:)]) {
+			[delegate plurk:self didFailRetrievingEmoticons:error];
+		}
+	}
+	else if ([actionName isEqualToString:OPRetrieveBlockedUsersAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailRetrievingBlockedUsers:)]) {
+			[delegate plurk:self didFailRetrievingBlockedUsers:error];
+		}
+	}	
+	else if ([actionName isEqualToString:OPBlockuUserAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailBlockingUser:)]) {
+			[delegate plurk:self didFailBlockingUser:error];
+		}
+	}	
+	else if ([actionName isEqualToString:OPUnblockuUserAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailUnblockingUser:)]) {
+			[delegate plurk:self didFailUnblockingUser:error];
 		}
 	}
 	

@@ -99,7 +99,6 @@
 - (void)plurk:(ObjectivePlurk *)plurk didRetrieveFriendsCompletionList:(NSDictionary *)result;
 - (void)plurk:(ObjectivePlurk *)plurk didFailRetrievingFriendsCompletionList:(NSError *)error;
 
-
 #pragma mark Alerts
 
 - (void)plurk:(ObjectivePlurk *)plurk didRetriveActiveAlerts:(NSDictionary *)result;
@@ -134,6 +133,21 @@
 - (void)plurk:(ObjectivePlurk *)plurk didSearchUsers:(NSDictionary *)result;
 - (void)plurk:(ObjectivePlurk *)plurk didFailSearchingUsers:(NSError *)error;
 
+#pragma mark Emoticons
+
+- (void)plurk:(ObjectivePlurk *)plurk didRetrieveEmoticons:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailRetrievingEmoticons:(NSError *)error;
+
+#pragma mark Blocks
+
+- (void)plurk:(ObjectivePlurk *)plurk didRetrieveBlockedUsers:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailRetrievingBlockedUsers:(NSError *)error;
+
+- (void)plurk:(ObjectivePlurk *)plurk didBlockUser:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailBlockingUser:(NSError *)error;
+
+- (void)plurk:(ObjectivePlurk *)plurk didUnblockUser:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailUnblockingUser:(NSError *)error;
 
 @end
 
@@ -209,6 +223,11 @@ extern NSString *OPRemoveNotificationAction;
 extern NSString *OPSearchMessagesAction;
 extern NSString *OPSearchUsersAction;
 
+extern NSString *OPRetrieveEmoticonsAction;
+
+extern NSString *OPRetrieveBlockedUsersAction;
+extern NSString *OPBlockuUserAction;
+extern NSString *OPUnblockuUserAction;
 
 @interface ObjectivePlurk : NSObject
 {
@@ -288,6 +307,15 @@ extern NSString *OPSearchUsersAction;
 - (void)searchMessagesWithQuery:(NSString *)query offset:(NSUInteger)offset delegate:(id)delegate;
 - (void)searchUsersWithQuery:(NSString *)query offset:(NSUInteger)offset delegate:(id)delegate;
 
+#pragma mark Emoticons
+
+- (void)retriveEmoticonsWithDelegate:(id)delegate;
+
+#pragma mark Blocks
+
+- (void)retrieveBlockedUsersWithDelegate:(id)delegate;
+- (void)blockUser:(NSString *)userIdentifier delegate:(id)delegate;
+- (void)unblockUser:(NSString *)userIdentifier delegate:(id)delegate;
 
 @property (retain, nonatomic) NSString *APIKey;
 @property (readonly) NSArray *qualifiers;
