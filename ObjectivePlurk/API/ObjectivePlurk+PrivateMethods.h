@@ -8,6 +8,12 @@
 
 #import "ObjectivePlurk.h"
 
+#if !TARGET_OS_IPHONE
+#else
+#import <MobileCoreServices/MobileCoreServices.h>
+#endif
+
+
 @interface ObjectivePlurk(PrivateMethods)
 
 - (NSString *)GETStringFromDictionary:(NSDictionary *)inDictionary;

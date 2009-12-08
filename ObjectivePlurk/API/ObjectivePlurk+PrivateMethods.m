@@ -6,10 +6,12 @@
 //  Copyright 2009 Lithoglyph Inc.. All rights reserved.
 //
 
+#import <CommonCrypto/CommonDigest.h>
 #import "ObjectivePlurk+PrivateMethods.h"
 
 NSString *const ObjectivePlurkAPIURLString = @"https://www.plurk.com";
 NSString *const ObjectivePlurkErrorDomain = @"ObjectivePlurkErrorDomain";
+NSString *const ObjectivePlurkUploadTempFilenamePrefix = @"ObjectivePlurk";
 
 NSString *const OPAlertFriendshipRequestType = @"friendship_request";
 NSString *const OPAlertFriendshipPendingType = @"friendship_pending";
@@ -74,7 +76,134 @@ NSString *const OPDeleteCliqueAction = @"/API/Cliques/delete_clique";
 NSString *const OPAddUserToCliqueAction = @"/API/Cliques/add";
 NSString *const OPRemoveUserFromCliqueAction = @"/API/Cliques/remove";
 
+NS_INLINE NSString *GenerateUUIDString()
+{
+    CFUUIDRef uuid = CFUUIDCreate(NULL);
+    CFStringRef uuidStr = CFUUIDCreateString(NULL, uuid);
+    CFRelease(uuid);
+	
+#if MAC_OS_X_VERSION_MAX_ALLOWED <= MAC_OS_X_VERSION_10_4	
+	return (NSString *)[(NSString*)uuidStr autorelease];			    
+#else
+	return (NSString *)[NSMakeCollectable(uuidStr) autorelease];			    
+#endif	
+}
+
+// http://developer.apple.com/macosx/uniformtypeidentifiers.html
+
+NSString *mimeTypeForExtension(NSString *ext)
+{
+    NSString* mimeType = nil;
+	
+    CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (CFStringRef)ext, NULL);
+    if (!UTI) return nil;
+	
+    CFStringRef registeredType = UTTypeCopyPreferredTagWithClass(UTI, kUTTagClassMIMEType);
+    if (!registeredType) {
+        if ([ext isEqualToString:@"m4v"]) {
+			mimeType = @"video/x-m4v";
+		}
+        else if ([ext isEqualToString:@"m4p"]) {
+			mimeType = @"audio/x-m4p";
+		}
+    }
+	
+    CFRelease(UTI);
+    return [mimeType autorelease];
+}
+
+
 @implementation ObjectivePlurk(PrivateMethods)
+
+
+- (BOOL)uploadFile:(NSString *)inPath suggestedFilename:(NSString *)inFilename requestURL:(NSURL *)requestURL multipartName:(NSString *)multipartName sessionInfo:(NSDictionary *)sessionInfo
+{
+    if ([_request isRunning] || ![self isLoggedIn]) {
+        return NO;
+    }
+	
+	NSString *filename = [inFilename length] ? inFilename : [inPath lastPathComponent];
+	NSAssert([filename length], @"Must have the last path component");
+	
+	NSInputStream *sourceStream = [NSInputStream inputStreamWithFileAtPath:inPath];
+	NSAssert1(sourceStream, @"File not exists or cannot open stream: %@", inPath);
+	
+	// build the multipart form
+    NSString *separator = GenerateUUIDString();
+    NSMutableString *multipartBegin = [NSMutableString string];
+    NSMutableString *multipartEnd = [NSMutableString string];
+	NSString *mimeType = mimeTypeForExtension([filename pathExtension]);
+	
+    // add filename, if nil, generate a UUID
+    [multipartBegin appendFormat:@"--%@\r\nContent-Disposition: form-data; name=\"%@\"; filename=\"%@\"\r\n", separator, multipartName, filename];
+    [multipartBegin appendFormat:@"Content-Type: %@\r\n\r\n", mimeType];	
+    [multipartEnd appendFormat:@"\r\n--%@--", separator];
+    
+    // now we have everything, create a temp file for this purpose; although UUID is inferior to 
+	NSString *uploadTempFilename = [NSTemporaryDirectory() stringByAppendingFormat:@"%@.%@", ObjectivePlurkUploadTempFilenamePrefix, GenerateUUIDString()];
+    
+	NSMutableDictionary *newSessionInfo = [NSMutableDictionary dictionaryWithDictionary:sessionInfo];
+	[newSessionInfo setObject:uploadTempFilename forKey:@"uploadTempFilename"];
+	
+    // create the write stream
+    NSOutputStream *outputStream = [NSOutputStream outputStreamToFileAtPath:uploadTempFilename append:NO];
+    [outputStream open];
+    
+    const char *UTF8String;
+    size_t writeLength;
+    UTF8String = [multipartBegin UTF8String];
+    writeLength = strlen(UTF8String);
+	
+	size_t __unused actualWrittenLength;
+	actualWrittenLength = [outputStream write:(uint8_t *)UTF8String maxLength:writeLength];
+    NSAssert(actualWrittenLength == writeLength, @"Must write multipartBegin");
+	
+    // open the input stream
+    const size_t bufferSize = 65536;
+    size_t readSize = 0;
+    uint8_t *buffer = (uint8_t *)calloc(1, bufferSize);
+    NSAssert(buffer, @"Must have enough memory for copy buffer");
+	
+    [sourceStream open];
+    while ([sourceStream hasBytesAvailable]) {
+        if (!(readSize = [sourceStream read:buffer maxLength:bufferSize])) {
+            break;
+        }
+		
+		size_t __unused actualWrittenLength;
+		actualWrittenLength = [outputStream write:buffer maxLength:readSize];
+        NSAssert (actualWrittenLength == readSize, @"Must completes the writing");
+    }
+    
+    [sourceStream close];
+    free(buffer);
+    
+    UTF8String = [multipartEnd UTF8String];
+    writeLength = strlen(UTF8String);
+	actualWrittenLength = [outputStream write:(uint8_t *)UTF8String maxLength:writeLength];
+    NSAssert(actualWrittenLength == writeLength, @"Must write multipartBegin");
+    [outputStream close];
+    
+    NSError *error = nil;
+    NSDictionary *fileInfo = [[NSFileManager defaultManager] attributesOfItemAtPath:uploadTempFilename error:&error];
+    NSAssert(fileInfo && !error, @"Must have upload temp file");
+    NSUInteger fileSize = [[fileInfo objectForKey:NSFileSize] unsignedIntegerValue];
+	    
+	NSLog(@"using file: %@", uploadTempFilename);
+	
+    NSInputStream *inputStream = [NSInputStream inputStreamWithFileAtPath:uploadTempFilename];
+	
+	NSString *tempContentType = [[_request.contentType copy] autorelease];
+	
+    NSString *multiPartContentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", separator];	
+	_request.contentType = multiPartContentType;
+	_request.sessionInfo = newSessionInfo;
+	
+	BOOL result = [_request performMethod:LFHTTPRequestPOSTMethod onURL:requestURL withInputStream:inputStream knownContentSize:fileSize];
+	_request.contentType = tempContentType;
+	
+	return result;
+}
 
 - (NSString *)GETStringFromDictionary:(NSDictionary *)inDictionary
 {
@@ -99,27 +228,28 @@ NSString *const OPRemoveUserFromCliqueAction = @"/API/Cliques/remove";
 	if ([_queue count]) {
 		id sessionInfo = [_queue objectAtIndex:0];
 		NSURL *URL = [sessionInfo objectForKey:@"URL"];	
-		NSLog(@"_request.requestHeader:%@", [_request.requestHeader description]);
 		[_request setSessionInfo:sessionInfo];
 		[_request performMethod:LFHTTPRequestGETMethod onURL:URL withData:nil];		
 		[_queue removeObject:sessionInfo];		
 	}
 }
 
-- (void)addRequestWithAction:(NSString *)actionName arguments:(NSDictionary *)arguments delegate:(id)delegate
+- (void)addRequestWithAction:(NSString *)actionName arguments:(NSDictionary *)arguments filepath:(NSString *)filepath delegate:(id)delegate
 {
 	NSString *URLString = [ObjectivePlurkAPIURLString stringByAppendingString:actionName];
 	URLString = [URLString stringByAppendingString:[self GETStringFromDictionary:arguments]];
 	NSURL *URL = [NSURL URLWithString:URLString];
 	NSLog(@"URL:%@", [URL description]);
-	NSDictionary *sessionInfo = [NSDictionary dictionaryWithObjectsAndKeys:actionName, @"actionName", URL, @"URL", delegate, @"delegate", nil];
+	NSDictionary *sessionInfo = [NSDictionary dictionaryWithObjectsAndKeys:actionName, @"actionName", arguments, @"arguments", URL, @"URL", delegate, @"delegate", nil];
 	
-	if (![_queue count] && ![_request isRunning]) {
-		NSLog(@"_request.requestHeader:%@", [_request.requestHeader description]);
+	if (filepath) {
+		[self cancelAllRequest];
+		[self uploadFile:filepath suggestedFilename:[filepath lastPathComponent] requestURL:URL multipartName:@"profile_image" sessionInfo:sessionInfo];
+	}	
+	else if (![_queue count] && ![_request isRunning]) {
 		[_request setSessionInfo:sessionInfo];
 		[_request performMethod:LFHTTPRequestGETMethod onURL:URL withData:nil];
 	}
-	
 	else {
 		if ([_queue count]) {
 			[_queue insertObject:sessionInfo atIndex:0];
@@ -129,6 +259,12 @@ NSString *const OPRemoveUserFromCliqueAction = @"/API/Cliques/remove";
 		}
 	}
 }
+
+- (void)addRequestWithAction:(NSString *)actionName arguments:(NSDictionary *)arguments delegate:(id)delegate
+{
+	[self addRequestWithAction:actionName arguments:arguments filepath:nil delegate:delegate];
+}
+
 
 
 - (void)loginDidSuccess:(LFHTTPRequest *)request

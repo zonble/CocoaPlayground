@@ -208,6 +208,7 @@ typedef enum {
 
 extern NSString *const ObjectivePlurkAPIURLString;
 extern NSString *const ObjectivePlurkErrorDomain;
+extern NSString *const ObjectivePlurkUploadTempFilenamePrefix;
 
 extern NSString *const OPAlertFriendshipRequestType;
 extern NSString *const OPAlertFriendshipPendingType;
@@ -275,7 +276,7 @@ extern NSString *const OPRemoveUserFromCliqueAction;
 
 
 @interface ObjectivePlurk : NSObject
-{
+{	
 	NSString *APIKey;
 	LFHTTPRequest *_request;
 	NSMutableArray *_queue;
