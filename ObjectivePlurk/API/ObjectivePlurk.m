@@ -497,7 +497,55 @@ static ObjectivePlurk *sharedInstance;
 	[self addRequestWithAction:OPUnblockuUserAction arguments:args delegate:delegate];	
 }
 
+#pragma mark Cliques
 
+- (void)retrieveCliquesWithDelegate:(id)delegate
+{
+	[self addRequestWithAction:OPRetrieveCliquesAction arguments:nil delegate:delegate];
+}
+
+- (void)createNewCliqueWithName:(NSString *)cliqueName delegate:(id)delegate
+{
+	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:cliqueName, @"clique_name", nil];
+	[self addRequestWithAction:OPCreateNewCliqueAction arguments:args delegate:delegate];
+}
+
+- (void)retrieveCliqueWithName:(NSString *)cliqueName delegate:(id)delegate
+{
+	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:cliqueName, @"clique_name", nil];
+	[self addRequestWithAction:OPRetrieveCliqueAction arguments:args delegate:delegate];
+}
+
+- (void)renameCliqueWithOldName:(NSString *)oldName newName:(NSString *)newName delegate:(id)delegate
+{
+	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:oldName, @"clique_name", newName, @"new_name", nil];
+	[self addRequestWithAction:OPRenameCliqueAction arguments:args delegate:delegate];
+}
+
+- (void)deleteCliqueWithName:(NSString *)cliqueName delegate:(id)delegate
+{
+	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:cliqueName, @"clique_name", nil];
+	[self addRequestWithAction:OPDeleteCliqueAction arguments:args delegate:delegate];
+}
+
+- (void)addUser:(NSString *)userIdentifier toClique:(NSString *)cliqueName delegate:(id)delegate
+{
+	if ([userIdentifier isKindOfClass:[NSNumber class]]) {
+		userIdentifier = [(NSNumber *)userIdentifier stringValue];
+	}
+	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:userIdentifier, @"user_id", cliqueName, @"clique_name", nil];
+	[self addRequestWithAction:OPAddUserToCliqueAction arguments:args delegate:delegate];	
+}
+
+- (void)removeUser:(NSString *)userIdentifier fromClique:(NSString *)cliqueName delegate:(id)delegate
+{
+	if ([userIdentifier isKindOfClass:[NSNumber class]]) {
+		userIdentifier = [(NSNumber *)userIdentifier stringValue];
+	}
+	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:userIdentifier, @"user_id", cliqueName, @"clique_name", nil];
+	[self addRequestWithAction:OPRemoveUserFromCliqueAction arguments:args delegate:delegate];		
+	
+}
 
 
 @synthesize APIKey;

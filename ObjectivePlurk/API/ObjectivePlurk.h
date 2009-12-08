@@ -149,6 +149,29 @@
 - (void)plurk:(ObjectivePlurk *)plurk didUnblockUser:(NSDictionary *)result;
 - (void)plurk:(ObjectivePlurk *)plurk didFailUnblockingUser:(NSError *)error;
 
+#pragma mark Cliques
+
+- (void)plurk:(ObjectivePlurk *)plurk didRetrieveCliques:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailRetrievingCliques:(NSError *)error;
+
+- (void)plurk:(ObjectivePlurk *)plurk didCreateNewClique:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailCreatingNewClique:(NSError *)error;
+
+- (void)plurk:(ObjectivePlurk *)plurk didRetrieveClique:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailRetrievingClique:(NSError *)error;
+
+- (void)plurk:(ObjectivePlurk *)plurk didRenameClique:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailRenamingClique:(NSError *)error;
+
+- (void)plurk:(ObjectivePlurk *)plurk didDeleteClique:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailDeletingClique:(NSError *)error;
+
+- (void)plurk:(ObjectivePlurk *)plurk didAddUserToClique:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailAddingUserToClique:(NSError *)error;
+
+- (void)plurk:(ObjectivePlurk *)plurk didRemoveUserFromClique:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailRemovingUserFromClique:(NSError *)error;
+
 @end
 
 #pragma mark -
@@ -228,6 +251,16 @@ extern NSString *OPRetrieveEmoticonsAction;
 extern NSString *OPRetrieveBlockedUsersAction;
 extern NSString *OPBlockuUserAction;
 extern NSString *OPUnblockuUserAction;
+
+extern NSString *OPRetrieveCliquesAction;
+extern NSString *OPCreateNewCliqueAction;
+extern NSString *OPRetrieveCliqueAction;
+extern NSString *OPRenameCliqueAction;
+extern NSString *OPDeleteCliqueAction;
+extern NSString *OPAddUserToCliqueAction;
+extern NSString *OPRemoveUserFromCliqueAction;
+
+
 
 @interface ObjectivePlurk : NSObject
 {
@@ -316,6 +349,16 @@ extern NSString *OPUnblockuUserAction;
 - (void)retrieveBlockedUsersWithDelegate:(id)delegate;
 - (void)blockUser:(NSString *)userIdentifier delegate:(id)delegate;
 - (void)unblockUser:(NSString *)userIdentifier delegate:(id)delegate;
+
+#pragma mark Cliques
+
+- (void)retrieveCliquesWithDelegate:(id)delegate;
+- (void)createNewCliqueWithName:(NSString *)cliqueName delegate:(id)delegate;
+- (void)retrieveCliqueWithName:(NSString *)cliqueName delegate:(id)delegate;
+- (void)renameCliqueWithOldName:(NSString *)oldName newName:(NSString *)newName delegate:(id)delegate;
+- (void)deleteCliqueWithName:(NSString *)cliqueName delegate:(id)delegate;
+- (void)addUser:(NSString *)userIdentifier toClique:(NSString *)cliqueName delegate:(id)delegate;
+- (void)removeUser:(NSString *)userIdentifier fromClique:(NSString *)cliqueName delegate:(id)delegate;
 
 @property (retain, nonatomic) NSString *APIKey;
 @property (readonly) NSArray *qualifiers;

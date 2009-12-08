@@ -65,6 +65,13 @@ NSString *OPRetrieveBlockedUsersAction = @"/API/Blocks/get";
 NSString *OPBlockuUserAction = @"/API/Blocks/block";
 NSString *OPUnblockuUserAction = @"/API/Blocks/unblock";
 
+NSString *OPRetrieveCliquesAction = @"/API/Cliques/get_cliques";
+NSString *OPCreateNewCliqueAction = @"/API/Cliques/create_clique";
+NSString *OPRetrieveCliqueAction = @"/API/Cliques/get_clique";
+NSString *OPRenameCliqueAction = @"/API/Cliques/rename_clique";
+NSString *OPDeleteCliqueAction = @"/API/Cliques/delete_clique";
+NSString *OPAddUserToCliqueAction = @"/API/Cliques/add";
+NSString *OPRemoveUserFromCliqueAction = @"/API/Cliques/remove";
 
 @implementation ObjectivePlurk(PrivateMethods)
 
@@ -355,6 +362,41 @@ NSString *OPUnblockuUserAction = @"/API/Blocks/unblock";
 			[delegate plurk:self didUnblockUser:result];
 		}
 	}	
+	else if ([actionName isEqualToString:OPRetrieveCliquesAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didRetrieveCliques:)]) {
+			[delegate plurk:self didRetrieveCliques:result];
+		}
+	}	
+	else if ([actionName isEqualToString:OPCreateNewCliqueAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didCreateNewClique:)]) {
+			[delegate plurk:self didCreateNewClique:result];
+		}
+	}	
+	else if ([actionName isEqualToString:OPRetrieveCliqueAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didRetrieveClique:)]) {
+			[delegate plurk:self didRetrieveClique:result];
+		}
+	}	
+	else if ([actionName isEqualToString:OPRenameCliqueAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didRenameClique:)]) {
+			[delegate plurk:self didRenameClique:result];
+		}
+	}	
+	else if ([actionName isEqualToString:OPDeleteCliqueAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didDeleteClique:)]) {
+			[delegate plurk:self didDeleteClique:result];
+		}
+	}	
+	else if ([actionName isEqualToString:OPAddUserToCliqueAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didAddUserToClique:)]) {
+			[delegate plurk:self didAddUserToClique:result];
+		}
+	}
+	else if ([actionName isEqualToString:OPRemoveUserFromCliqueAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didRemoveUserFromClique:)]) {
+			[delegate plurk:self didRemoveUserFromClique:result];
+		}
+	}
 	
 	
 	
@@ -553,7 +595,41 @@ NSString *OPUnblockuUserAction = @"/API/Blocks/unblock";
 			[delegate plurk:self didFailUnblockingUser:error];
 		}
 	}
-	
+	else if ([actionName isEqualToString:OPRetrieveCliquesAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailRetrievingCliques:)]) {
+			[delegate plurk:self didFailRetrievingCliques:error];
+		}
+	}	
+	else if ([actionName isEqualToString:OPCreateNewCliqueAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailCreatingNewClique:)]) {
+			[delegate plurk:self didFailCreatingNewClique:error];
+		}
+	}	
+	else if ([actionName isEqualToString:OPRetrieveCliqueAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailRetrievingClique:)]) {
+			[delegate plurk:self didFailRetrievingClique:error];
+		}
+	}	
+	else if ([actionName isEqualToString:OPRenameCliqueAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailRenamingClique:)]) {
+			[delegate plurk:self didFailRenamingClique:error];
+		}
+	}	
+	else if ([actionName isEqualToString:OPDeleteCliqueAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailDeletingClique:)]) {
+			[delegate plurk:self didFailDeletingClique:error];
+		}
+	}	
+	else if ([actionName isEqualToString:OPAddUserToCliqueAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailAddingUserToClique:)]) {
+			[delegate plurk:self didFailAddingUserToClique:error];
+		}
+	}
+	else if ([actionName isEqualToString:OPRemoveUserFromCliqueAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailRemovingUserFromClique:)]) {
+			[delegate plurk:self didFailRemovingUserFromClique:error];
+		}
+	}
 }
 
 - (void)httpRequestDidComplete:(LFHTTPRequest *)request
