@@ -8,71 +8,71 @@
 
 #import "ObjectivePlurk+PrivateMethods.h"
 
-NSString *ObjectivePlurkAPIURLString = @"https://www.plurk.com";
-NSString *ObjectivePlurkErrorDomain = @"ObjectivePlurkErrorDomain";
+NSString *const ObjectivePlurkAPIURLString = @"https://www.plurk.com";
+NSString *const ObjectivePlurkErrorDomain = @"ObjectivePlurkErrorDomain";
 
-NSString *OPAlertFriendshipRequestType = @"friendship_request";
-NSString *OPAlertFriendshipPendingType = @"friendship_pending";
-NSString *OPAlertNewFanType = @"new_fan";
-NSString *OPAlertFriendshipAcceptedType = @"friendship_accepted";
-NSString *OPAlertNewFriendType = @"new_friend";
+NSString *const OPAlertFriendshipRequestType = @"friendship_request";
+NSString *const OPAlertFriendshipPendingType = @"friendship_pending";
+NSString *const OPAlertNewFanType = @"new_fan";
+NSString *const OPAlertFriendshipAcceptedType = @"friendship_accepted";
+NSString *const OPAlertNewFriendType = @"new_friend";
 
-NSString *OPLoginAction = @"/API/Users/login";
-NSString *OPUpdateProfileAction = @"/API/Users/update";
+NSString *const OPLoginAction = @"/API/Users/login";
+NSString *const OPUpdateProfileAction = @"/API/Users/update";
 
-NSString *OPRetrivePollingMessageAction = @"/API/Polling/getPlurks";
+NSString *const OPRetrivePollingMessageAction = @"/API/Polling/getPlurks";
 
-NSString *OPRetriveMessageAction = @"/API/Timeline/getPlurk";
-NSString *OPRetriveMessagesAction = @"/API/Timeline/getPlurks";
-NSString *OPRetriveUnreadMessagesAction = @"/API/Timeline/getUnreadPlurks";
-NSString *OPMuteMessagesAction = @"/API/Timeline/mutePlurks";
-NSString *OPUnmuteMessagesAction = @"/API/Timeline/unmutePlurks";
-NSString *OPMarkMessageAsReadAction = @"/API/Timeline/markAsRead";
-NSString *OPAddMessageAction = @"/API/Timeline/plurkAdd";
-NSString *OPDeleteMessageAction = @"/API/Timeline/plurkDelete";
-NSString *OPEditMessageAction = @"/API/Timeline/plurkEdit";
+NSString *const OPRetriveMessageAction = @"/API/Timeline/getPlurk";
+NSString *const OPRetriveMessagesAction = @"/API/Timeline/getPlurks";
+NSString *const OPRetriveUnreadMessagesAction = @"/API/Timeline/getUnreadPlurks";
+NSString *const OPMuteMessagesAction = @"/API/Timeline/mutePlurks";
+NSString *const OPUnmuteMessagesAction = @"/API/Timeline/unmutePlurks";
+NSString *const OPMarkMessageAsReadAction = @"/API/Timeline/markAsRead";
+NSString *const OPAddMessageAction = @"/API/Timeline/plurkAdd";
+NSString *const OPDeleteMessageAction = @"/API/Timeline/plurkDelete";
+NSString *const OPEditMessageAction = @"/API/Timeline/plurkEdit";
 
-NSString *OPRetriveResponsesAction = @"/API/Responses/get";
-NSString *OPAddResponsesAction = @"/API/Responses/responseAdd";
-NSString *OPDeleteResponsesAction = @"/API/Timeline/responseDelete";
+NSString *const OPRetriveResponsesAction = @"/API/Responses/get";
+NSString *const OPAddResponsesAction = @"/API/Responses/responseAdd";
+NSString *const OPDeleteResponsesAction = @"/API/Timeline/responseDelete";
 
-NSString *OPRetrieveMyProfileAction = @"/API/Profile/getOwnProfile";
-NSString *OPRetrievePublicProfileAction = @"/API/Profile/getPublicProfile";
+NSString *const OPRetrieveMyProfileAction = @"/API/Profile/getOwnProfile";
+NSString *const OPRetrievePublicProfileAction = @"/API/Profile/getPublicProfile";
 
-NSString *OPRetriveFriendAction = @"/API/FriendsFans/getFriendsByOffset";
-NSString *OPRetriveFansAction = @"/API/FriendsFans/getFansByOffset";
-NSString *OPRetriveFollowingAction = @"/API/FriendsFans/getFollowingByOffset";
-NSString *OPBecomeFriendAction = @"/API/FriendsFans/becomeFriend";
-NSString *OPRemoveFriendshipAction = @"/API/FriendsFans/becomeFriend";
-NSString *OPBecomeFanAction = @"/API/FriendsFans/becomeFan";
-NSString *OPSetFollowingAction = @"/API/FriendsFans/setFollowing";
-NSString *OPRetrieveFriendsCompletionListAction = @"/API/FriendsFans/getCompletion";
+NSString *const OPRetriveFriendAction = @"/API/FriendsFans/getFriendsByOffset";
+NSString *const OPRetriveFansAction = @"/API/FriendsFans/getFansByOffset";
+NSString *const OPRetriveFollowingAction = @"/API/FriendsFans/getFollowingByOffset";
+NSString *const OPBecomeFriendAction = @"/API/FriendsFans/becomeFriend";
+NSString *const OPRemoveFriendshipAction = @"/API/FriendsFans/becomeFriend";
+NSString *const OPBecomeFanAction = @"/API/FriendsFans/becomeFan";
+NSString *const OPSetFollowingAction = @"/API/FriendsFans/setFollowing";
+NSString *const OPRetrieveFriendsCompletionListAction = @"/API/FriendsFans/getCompletion";
 
-NSString *OPRetriveActiveAlertsAction = @"/API/Alerts/getActive";
-NSString *OPRetriveHistoryAction = @"/API/Alerts/getHistory";
-NSString *OPAddAsFanAction = @"/API/Alerts/addAsFan";
-NSString *OPAddAllAsFanAction = @"/API/Alerts/addAllAsFan";
-NSString *OPAddAsFriendAction = @"/API/Alerts/addAsFriend";
-NSString *OPAddAllAsFriendAction = @"/API/Alerts/addAllAsFriends";
-NSString *OPDenyFriendshipAction = @"/API/Alerts/denyFriendship";
-NSString *OPRemoveNotificationAction = @"/API/Alerts/removeNotification";
+NSString *const OPRetriveActiveAlertsAction = @"/API/Alerts/getActive";
+NSString *const OPRetriveHistoryAction = @"/API/Alerts/getHistory";
+NSString *const OPAddAsFanAction = @"/API/Alerts/addAsFan";
+NSString *const OPAddAllAsFanAction = @"/API/Alerts/addAllAsFan";
+NSString *const OPAddAsFriendAction = @"/API/Alerts/addAsFriend";
+NSString *const OPAddAllAsFriendAction = @"/API/Alerts/addAllAsFriends";
+NSString *const OPDenyFriendshipAction = @"/API/Alerts/denyFriendship";
+NSString *const OPRemoveNotificationAction = @"/API/Alerts/removeNotification";
 
-NSString *OPSearchMessagesAction = @"/API/PlurkSearch/search";
-NSString *OPSearchUsersAction = @"/API/UserSearch/search";
+NSString *const OPSearchMessagesAction = @"/API/PlurkSearch/search";
+NSString *const OPSearchUsersAction = @"/API/UserSearch/search";
 
-NSString *OPRetrieveEmoticonsAction = @"/API/Emoticons/get";
+NSString *const OPRetrieveEmoticonsAction = @"/API/Emoticons/get";
 
-NSString *OPRetrieveBlockedUsersAction = @"/API/Blocks/get";
-NSString *OPBlockuUserAction = @"/API/Blocks/block";
-NSString *OPUnblockuUserAction = @"/API/Blocks/unblock";
+NSString *const OPRetrieveBlockedUsersAction = @"/API/Blocks/get";
+NSString *const OPBlockuUserAction = @"/API/Blocks/block";
+NSString *const OPUnblockuUserAction = @"/API/Blocks/unblock";
 
-NSString *OPRetrieveCliquesAction = @"/API/Cliques/get_cliques";
-NSString *OPCreateNewCliqueAction = @"/API/Cliques/create_clique";
-NSString *OPRetrieveCliqueAction = @"/API/Cliques/get_clique";
-NSString *OPRenameCliqueAction = @"/API/Cliques/rename_clique";
-NSString *OPDeleteCliqueAction = @"/API/Cliques/delete_clique";
-NSString *OPAddUserToCliqueAction = @"/API/Cliques/add";
-NSString *OPRemoveUserFromCliqueAction = @"/API/Cliques/remove";
+NSString *const OPRetrieveCliquesAction = @"/API/Cliques/get_cliques";
+NSString *const OPCreateNewCliqueAction = @"/API/Cliques/create_clique";
+NSString *const OPRetrieveCliqueAction = @"/API/Cliques/get_clique";
+NSString *const OPRenameCliqueAction = @"/API/Cliques/rename_clique";
+NSString *const OPDeleteCliqueAction = @"/API/Cliques/delete_clique";
+NSString *const OPAddUserToCliqueAction = @"/API/Cliques/add";
+NSString *const OPRemoveUserFromCliqueAction = @"/API/Cliques/remove";
 
 @implementation ObjectivePlurk(PrivateMethods)
 

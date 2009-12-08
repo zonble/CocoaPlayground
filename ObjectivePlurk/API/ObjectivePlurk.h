@@ -206,71 +206,71 @@ typedef enum {
 	OPOnlyFriendsCanComment = 2
 } OPCanComment;
 
-extern NSString *ObjectivePlurkAPIURLString;
-extern NSString *ObjectivePlurkErrorDomain;
+extern NSString *const ObjectivePlurkAPIURLString;
+extern NSString *const ObjectivePlurkErrorDomain;
 
-extern NSString *OPAlertFriendshipRequestType;
-extern NSString *OPAlertFriendshipPendingType;
-extern NSString *OPAlertNewFanType;
-extern NSString *OPAlertFriendshipAcceptedType;
-extern NSString *OPAlertNewFriendType;
+extern NSString *const OPAlertFriendshipRequestType;
+extern NSString *const OPAlertFriendshipPendingType;
+extern NSString *const OPAlertNewFanType;
+extern NSString *const OPAlertFriendshipAcceptedType;
+extern NSString *const OPAlertNewFriendType;
 
-extern NSString *OPLoginAction;
-extern NSString *OPUpdateProfileAction;
+extern NSString *const OPLoginAction;
+extern NSString *const OPUpdateProfileAction;
 
-extern NSString *OPRetrivePollingMessageAction;
+extern NSString *const OPRetrivePollingMessageAction;
 
-extern NSString *OPRetriveMessageAction;
-extern NSString *OPRetriveMessagesAction;
-extern NSString *OPRetriveUnreadMessagesAction;
-extern NSString *OPMuteMessagesAction;
-extern NSString *OPUnmuteMessagesAction;
-extern NSString *OPMarkMessageAsReadAction;
-extern NSString *OPAddMessageAction;
-extern NSString *OPDeleteMessageAction;
-extern NSString *OPEditMessageAction;
+extern NSString *const OPRetriveMessageAction;
+extern NSString *const OPRetriveMessagesAction;
+extern NSString *const OPRetriveUnreadMessagesAction;
+extern NSString *const OPMuteMessagesAction;
+extern NSString *const OPUnmuteMessagesAction;
+extern NSString *const OPMarkMessageAsReadAction;
+extern NSString *const OPAddMessageAction;
+extern NSString *const OPDeleteMessageAction;
+extern NSString *const OPEditMessageAction;
 
-extern NSString *OPRetriveResponsesAction;
-extern NSString *OPAddResponsesAction;
-extern NSString *OPDeleteResponsesAction;
+extern NSString *const OPRetriveResponsesAction;
+extern NSString *const OPAddResponsesAction;
+extern NSString *const OPDeleteResponsesAction;
 
-extern NSString *OPRetrieveMyProfileAction;
-extern NSString *OPRetrievePublicProfileAction;
+extern NSString *const OPRetrieveMyProfileAction;
+extern NSString *const OPRetrievePublicProfileAction;
 
-extern NSString *OPRetriveFriendAction;
-extern NSString *OPRetriveFansAction;
-extern NSString *OPRetriveFollowingAction;
-extern NSString *OPBecomeFriendAction;
-extern NSString *OPRemoveFriendshipAction;
-extern NSString *OPBecomeFanAction;
-extern NSString *OPSetFollowingAction;
-extern NSString *OPRetrieveFriendsCompletionListAction;
+extern NSString *const OPRetriveFriendAction;
+extern NSString *const OPRetriveFansAction;
+extern NSString *const OPRetriveFollowingAction;
+extern NSString *const OPBecomeFriendAction;
+extern NSString *const OPRemoveFriendshipAction;
+extern NSString *const OPBecomeFanAction;
+extern NSString *const OPSetFollowingAction;
+extern NSString *const OPRetrieveFriendsCompletionListAction;
 
-extern NSString *OPRetriveActiveAlertsAction;
-extern NSString *OPRetriveHistoryAction;
-extern NSString *OPAddAsFanAction;
-extern NSString *OPAddAllAsFanAction;
-extern NSString *OPAddAsFriendAction;
-extern NSString *OPAddAllAsFriendAction;
-extern NSString *OPDenyFriendshipAction;
-extern NSString *OPRemoveNotificationAction;
+extern NSString *const OPRetriveActiveAlertsAction;
+extern NSString *const OPRetriveHistoryAction;
+extern NSString *const OPAddAsFanAction;
+extern NSString *const OPAddAllAsFanAction;
+extern NSString *const OPAddAsFriendAction;
+extern NSString *const OPAddAllAsFriendAction;
+extern NSString *const OPDenyFriendshipAction;
+extern NSString *const OPRemoveNotificationAction;
 
-extern NSString *OPSearchMessagesAction;
-extern NSString *OPSearchUsersAction;
+extern NSString *const OPSearchMessagesAction;
+extern NSString *const OPSearchUsersAction;
 
-extern NSString *OPRetrieveEmoticonsAction;
+extern NSString *const OPRetrieveEmoticonsAction;
 
-extern NSString *OPRetrieveBlockedUsersAction;
-extern NSString *OPBlockuUserAction;
-extern NSString *OPUnblockuUserAction;
+extern NSString *const OPRetrieveBlockedUsersAction;
+extern NSString *const OPBlockuUserAction;
+extern NSString *const OPUnblockuUserAction;
 
-extern NSString *OPRetrieveCliquesAction;
-extern NSString *OPCreateNewCliqueAction;
-extern NSString *OPRetrieveCliqueAction;
-extern NSString *OPRenameCliqueAction;
-extern NSString *OPDeleteCliqueAction;
-extern NSString *OPAddUserToCliqueAction;
-extern NSString *OPRemoveUserFromCliqueAction;
+extern NSString *const OPRetrieveCliquesAction;
+extern NSString *const OPCreateNewCliqueAction;
+extern NSString *const OPRetrieveCliqueAction;
+extern NSString *const OPRenameCliqueAction;
+extern NSString *const OPDeleteCliqueAction;
+extern NSString *const OPAddUserToCliqueAction;
+extern NSString *const OPRemoveUserFromCliqueAction;
 
 
 
