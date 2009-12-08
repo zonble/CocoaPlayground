@@ -165,7 +165,6 @@ static ObjectivePlurk *sharedInstance;
 	NSMutableDictionary *args = [NSMutableDictionary dictionary];
 	if (offsetDate) {
 		NSString *dateString = [_dateFormatter stringFromDate:offsetDate];
-		NSLog(@"dateString:%@", [dateString description]);
 		[args setValue:dateString forKey:@"offset"];
 	}
 	[self addRequestWithURLPath:@"/API/Polling/getPlurks" arguments:args actionName:OPRetrivePollingMessageAction delegate:delegate];
@@ -188,7 +187,6 @@ static ObjectivePlurk *sharedInstance;
 	NSMutableDictionary *args = [NSMutableDictionary dictionary];
 	if (offsetDate) {
 		NSString *dateString = [_dateFormatter stringFromDate:offsetDate];
-		NSLog(@"dateString:%@", [dateString description]);
 		[args setValue:dateString forKey:@"offset"];
 	}
 	if (limit) {
@@ -266,6 +264,31 @@ static ObjectivePlurk *sharedInstance;
 	
 	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:identifer, @"plurk_id", content, @"content", nil];
 	[self addRequestWithURLPath:@"/API/Timeline/plurkEdit" arguments:args actionName:OPEditMessageAction delegate:delegate];		
+}
+
+#pragma mark Responses
+
+- (void)retrieveResponsesWithMessageIdentifier:(NSString *)identifer delegate:(id)delegate
+{
+	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:identifer, @"plurk_id", nil];
+	[self addRequestWithURLPath:@"/API/Responses/get" arguments:args actionName:OPRetriveResponsesAction delegate:delegate];
+}
+- (void)addNewResponseWithContent:(NSString *)content qualifier:(NSString *)qualifier toMessages:(NSString *)identifer delegate:(id)delegate
+{
+	if ([identifer isKindOfClass:[NSNumber class]]) {
+		identifer = [(NSNumber *)identifer stringValue];
+	}
+	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:identifer, @"plurk_id", content, @"content", qualifier, @"qualifier", nil];
+	[self addRequestWithURLPath:@"/API/Responses/responseAdd" arguments:args actionName:OPAddResponsesAction delegate:delegate];
+}
+- (void)deleteResponseWithMessageIdentifier:(NSString *)identifer delegate:(id)delegate
+{
+	if ([identifer isKindOfClass:[NSNumber class]]) {
+		identifer = [(NSNumber *)identifer stringValue];
+	}
+	
+	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:identifer, @"plurk_id", nil];
+	[self addRequestWithURLPath:@"/API/Timeline/responseDelete" arguments:args actionName:OPDeleteResponsesAction delegate:delegate];
 }
 
 #pragma mark Profiles

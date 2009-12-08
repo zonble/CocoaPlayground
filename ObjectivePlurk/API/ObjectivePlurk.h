@@ -54,6 +54,17 @@
 - (void)plurk:(ObjectivePlurk *)plurk didEditMessage:(NSDictionary *)result;
 - (void)plurk:(ObjectivePlurk *)plurk didFailEditingMessage:(NSError *)error;
 
+#pragma mark Responses
+
+- (void)plurk:(ObjectivePlurk *)plurk didRetrieveResponses:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailRetrievingResponses:(NSError *)error;
+
+- (void)plurk:(ObjectivePlurk *)plurk didAddResponse:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailAddingResponse:(NSError *)error;
+
+- (void)plurk:(ObjectivePlurk *)plurk didDeleteResponse:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailDeletingResponse:(NSError *)error;
+
 #pragma mark Profiles
 
 - (void)plurk:(ObjectivePlurk *)plurk didRetrieveMyProfile:(NSDictionary *)result;
@@ -95,6 +106,10 @@ extern NSString *OPMarkMessageAsReadAction;
 extern NSString *OPAddMessageAction;
 extern NSString *OPDeleteMessageAction;
 extern NSString *OPEditMessageAction;
+
+extern NSString *OPRetriveResponsesAction;
+extern NSString *OPAddResponsesAction;
+extern NSString *OPDeleteResponsesAction;
 
 extern NSString *OPRetrieveMyProfileAction;
 extern NSString *OPRetrievePublicProfileAction;
@@ -139,6 +154,12 @@ extern NSString *OPRetrievePublicProfileAction;
 
 - (void)deleteMessageWithMessageIdentifier:(NSString *)identifer delegate:(id)delegate;
 - (void)editMessageWithMessageIdentifier:(NSString *)identifer content:(NSString *)content delegate:(id)delegate;
+
+#pragma mark Responses
+
+- (void)retrieveResponsesWithMessageIdentifier:(NSString *)identifer delegate:(id)delegate;
+- (void)addNewResponseWithContent:(NSString *)content qualifier:(NSString *)qualifier toMessages:(NSString *)identifer delegate:(id)delegate;
+- (void)deleteResponseWithMessageIdentifier:(NSString *)identifer delegate:(id)delegate;
 
 #pragma mark Profiles
 

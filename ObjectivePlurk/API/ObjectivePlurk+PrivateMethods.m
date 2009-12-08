@@ -25,6 +25,10 @@ NSString *OPAddMessageAction = @"OPAddMessageAction";
 NSString *OPDeleteMessageAction = @"OPDeleteMessageAction";
 NSString *OPEditMessageAction = @"OPEditMessageAction";
 
+NSString *OPRetriveResponsesAction = @"OPRetriveResponsesAction";
+NSString *OPAddResponsesAction = @"OPAddResponsesAction";
+NSString *OPDeleteResponsesAction = @"OPDeleteResponsesAction";
+
 NSString *OPRetrieveMyProfileAction = @"OPRetrieveMyProfileAction";
 NSString *OPRetrievePublicProfileAction = @"OPRetrievePublicProfileAction";
 
@@ -133,7 +137,12 @@ NSString *OPRetrievePublicProfileAction = @"OPRetrievePublicProfileAction";
 	id delegate = [sessionInfo valueForKey:@"delegate"];	
 	NSString *actionName = [sessionInfo valueForKey:@"actionName"];	
 
-	if ([actionName isEqualToString:OPRetriveMessageAction]) {
+	if ([actionName isEqualToString:OPRetrivePollingMessageAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didRetrievePollingMessages:)]) {
+			[delegate plurk:self didRetrievePollingMessages:result];
+		}
+	}
+	else if ([actionName isEqualToString:OPRetriveMessageAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didRetrieveMessage:)]) {
 			[delegate plurk:self didRetrieveMessage:result];
 		}
@@ -178,6 +187,21 @@ NSString *OPRetrievePublicProfileAction = @"OPRetrievePublicProfileAction";
 			[delegate plurk:self didEditMessage:result];
 		}
 	}
+	else if ([actionName isEqualToString:OPRetriveResponsesAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didRetrieveResponses:)]) {
+			[delegate plurk:self didRetrieveResponses:result];
+		}
+	}
+	else if ([actionName isEqualToString:OPAddResponsesAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didAddResponse:)]) {
+			[delegate plurk:self didAddResponse:result];
+		}
+	}
+	else if ([actionName isEqualToString:OPDeleteResponsesAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didDeleteResponse:)]) {
+			[delegate plurk:self didDeleteResponse:result];
+		}
+	}
 	
 	else if ([actionName isEqualToString:OPRetrieveMyProfileAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didRetrieveMyProfile:)]) {
@@ -200,7 +224,12 @@ NSString *OPRetrievePublicProfileAction = @"OPRetrievePublicProfileAction";
 
 	NSString *actionName = [sessionInfo valueForKey:@"actionName"];
 
-	if ([actionName isEqualToString:OPRetriveMessageAction]) {
+	if ([actionName isEqualToString:OPRetrivePollingMessageAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailRetrievingPollingMessages:)]) {
+			[delegate plurk:self didFailRetrievingPollingMessages:error];
+		}
+	}		
+	else if ([actionName isEqualToString:OPRetriveMessageAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didFailRetrievingMessage:)]) {
 			[delegate plurk:self didFailRetrievingMessage:error];
 		}
@@ -245,6 +274,23 @@ NSString *OPRetrievePublicProfileAction = @"OPRetrievePublicProfileAction";
 			[delegate plurk:self didFailEditingMessage:error];
 		}
 	}
+	else if ([actionName isEqualToString:OPRetriveResponsesAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailRetrievingResponses:)]) {
+			[delegate plurk:self didFailRetrievingResponses:error];
+		}
+	}
+	else if ([actionName isEqualToString:OPAddResponsesAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailAddingResponse:)]) {
+			[delegate plurk:self didFailAddingResponse:error];
+		}
+	}
+	else if ([actionName isEqualToString:OPDeleteResponsesAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailDeletingResponse:)]) {
+			[delegate plurk:self didFailDeletingResponse:error];
+		}
+	}
+	
+	
 	else if ([actionName isEqualToString:OPRetrieveMyProfileAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didFailRetrievingMyProfile:)]) {
 			[delegate plurk:self didFailRetrievingMyProfile:error];
