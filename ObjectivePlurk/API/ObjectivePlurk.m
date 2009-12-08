@@ -109,6 +109,7 @@ static ObjectivePlurk *sharedInstance;
 - (void)logout
 {
 	_request.requestHeader = nil;
+	self.currentUserInfo = nil;
 }
 
 
@@ -150,6 +151,7 @@ static ObjectivePlurk *sharedInstance;
 	return nil;
 }
 
+#pragma mark -
 #pragma mark Users
 
 - (void)loginWithUsername:(NSString *)username password:(NSString *)password delegate:(id)delegate
@@ -440,6 +442,29 @@ static ObjectivePlurk *sharedInstance;
 {
 	[self addRequestWithAction:OPRemoveNotificationAction arguments:nil delegate:delegate];
 }
+
+#pragma mark Search
+
+- (void)searchMessagesWithQuery:(NSString *)query offset:(NSUInteger)offset delegate:(id)delegate
+{
+	NSMutableDictionary *args = [NSMutableDictionary dictionary];
+	[args setObject:query forKey:@"query"];
+	if (offset) {
+		[args setObject:[NSString stringWithFormat:@"%d", offset] forKey:@"offset"];
+	}	
+	[self addRequestWithAction:OPSearchMessagesAction arguments:nil delegate:delegate];
+}
+
+- (void)searchUsersWithQuery:(NSString *)query offset:(NSUInteger)offset delegate:(id)delegate
+{
+	NSMutableDictionary *args = [NSMutableDictionary dictionary];
+	[args setObject:query forKey:@"query"];
+	if (offset) {
+		[args setObject:[NSString stringWithFormat:@"%d", offset] forKey:@"offset"];
+	}	
+	[self addRequestWithAction:OPSearchUsersAction arguments:nil delegate:delegate];	
+}
+
 
 
 @synthesize APIKey;

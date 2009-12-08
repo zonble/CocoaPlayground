@@ -56,6 +56,10 @@ NSString *OPAddAllAsFriendAction = @"/API/Alerts/addAllAsFriends";
 NSString *OPDenyFriendshipAction = @"/API/Alerts/denyFriendship";
 NSString *OPRemoveNotificationAction = @"/API/Alerts/removeNotification";
 
+NSString *OPSearchMessagesAction = @"/API/PlurkSearch/search";
+NSString *OPSearchUsersAction = @"/API/UserSearch/search";
+
+
 @implementation ObjectivePlurk(PrivateMethods)
 
 - (NSString *)GETStringFromDictionary:(NSDictionary *)inDictionary
@@ -315,6 +319,17 @@ NSString *OPRemoveNotificationAction = @"/API/Alerts/removeNotification";
 			[delegate plurk:self didRemoveNotification:result];
 		}
 	}
+	else if ([actionName isEqualToString:OPSearchMessagesAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didSearchMessages:)]) {
+			[delegate plurk:self didSearchMessages:result];
+		}
+	}
+	else if ([actionName isEqualToString:OPSearchUsersAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didSearchUsers:)]) {
+			[delegate plurk:self didSearchUsers:result];
+		}
+	}
+	
 	
 }
 
@@ -479,6 +494,16 @@ NSString *OPRemoveNotificationAction = @"/API/Alerts/removeNotification";
 	else if ([actionName isEqualToString:OPRemoveNotificationAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didFailRemovingNotification:)]) {
 			[delegate plurk:self didFailRemovingNotification:error];
+		}
+	}
+	else if ([actionName isEqualToString:OPSearchMessagesAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailSearchingMessages:)]) {
+			[delegate plurk:self didFailSearchingMessages:error];
+		}
+	}
+	else if ([actionName isEqualToString:OPSearchUsersAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailSearchingUsers:)]) {
+			[delegate plurk:self didFailSearchingUsers:error];
 		}
 	}
 	

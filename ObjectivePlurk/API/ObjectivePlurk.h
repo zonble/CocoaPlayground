@@ -126,10 +126,24 @@
 - (void)plurk:(ObjectivePlurk *)plurk didRemoveNotification:(NSDictionary *)result;
 - (void)plurk:(ObjectivePlurk *)plurk didFailRemovingNotification:(NSError *)error;
 
+#pragma mark Search
+
+- (void)plurk:(ObjectivePlurk *)plurk didSearchMessages:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailSearchingMessages:(NSError *)error;
+
+- (void)plurk:(ObjectivePlurk *)plurk didSearchUsers:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailSearchingUsers:(NSError *)error;
+
 
 @end
 
 #pragma mark -
+
+typedef enum {
+	OPGenderMale = 0,
+	OPGenderFemale = 1
+} OPGender;
+
 
 typedef enum {
 	OPSmallUserProfileImageSize = 0,
@@ -191,6 +205,10 @@ extern NSString *OPAddAsFriendAction;
 extern NSString *OPAddAllAsFriendAction;
 extern NSString *OPDenyFriendshipAction;
 extern NSString *OPRemoveNotificationAction;
+
+extern NSString *OPSearchMessagesAction;
+extern NSString *OPSearchUsersAction;
+
 
 @interface ObjectivePlurk : NSObject
 {
@@ -264,6 +282,12 @@ extern NSString *OPRemoveNotificationAction;
 - (void)addAllAsFriendWithDelegate:(id)delegate;
 - (void)denyFriendshipWithUserIdentifier:(NSString *)userIdentifier delegate:(id)delegate;
 - (void)removeNotificationWithDelegate:(id)delegate;
+
+#pragma mark Search
+
+- (void)searchMessagesWithQuery:(NSString *)query offset:(NSUInteger)offset delegate:(id)delegate;
+- (void)searchUsersWithQuery:(NSString *)query offset:(NSUInteger)offset delegate:(id)delegate;
+
 
 @property (retain, nonatomic) NSString *APIKey;
 @property (readonly) NSArray *qualifiers;
