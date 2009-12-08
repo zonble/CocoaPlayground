@@ -85,17 +85,6 @@ static ObjectivePlurk *sharedInstance;
 		}
 	}
 }
-- (void)runQueue
-{
-	if ([_queue count]) {
-		id sessionInfo = [_queue objectAtIndex:0];
-		NSURL *URL = [sessionInfo objectForKey:@"URL"];	
-		NSLog(@"_request.requestHeader:%@", [_request.requestHeader description]);
-		[_request setSessionInfo:sessionInfo];
-		[_request performMethod:LFHTTPRequestGETMethod onURL:URL withData:nil];		
-		[_queue removeObject:sessionInfo];		
-	}
-}
 
 - (BOOL)isLoggedIn
 {
@@ -156,8 +145,47 @@ static ObjectivePlurk *sharedInstance;
 
 - (void)loginWithUsername:(NSString *)username password:(NSString *)password delegate:(id)delegate
 {
+	NSAssert(username, @"Username is required");
+	NSAssert(username, @"Password is required");
 	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:username, @"username", password, @"password", nil];
 	[self addRequestWithAction:OPLoginAction arguments:args delegate:delegate];
+}
+
+- (void)updateProfileWithOldPassword:(NSString *)oldPassword fullname:(NSString *)fullname newPassword:(NSString *)newPassword email:(NSString *)email displayName:(NSString *)displayName privacy:(OPPrivacy)privacy dateOfBirth:(NSString *)dateOfBirth delegate:(id)delegate
+{
+	NSMutableDictionary *args = [NSMutableDictionary dictionary];	
+	NSAssert(oldPassword, @"oldPassword is required");
+	[args setObject:oldPassword forKey:@"current_password"];
+	if (fullname) {
+		[args setObject:fullname forKey:@"full_name"];
+	}
+	if (newPassword) {
+		[args setObject:newPassword forKey:@"new_password"];
+	}
+	if (email) {
+		[args setObject:newPassword forKey:@"email"];
+	}
+	if (displayName) {
+		[args setObject:displayName forKey:@"display_name"];
+	}
+	if (dateOfBirth) {
+		[args setObject:dateOfBirth forKey:@"date_of_birth"];
+	}
+	switch (privacy) {
+		case OPPrivacyWorld:
+			[args setObject:@"world" forKey:@"privacy"];
+			break;
+		case OPPrivacyOnlyFriends:
+			[args setObject:@"only_friends" forKey:@"privacy"];
+			break;
+		case OPPrivacyOnlyMe:
+			[args setObject:@"only_me" forKey:@"privacy"];
+			break;			
+		default:
+			break;
+	}
+	
+	[self addRequestWithAction:OPUpdateProfileAction arguments:args delegate:delegate];
 }
 
 #pragma mark Polling

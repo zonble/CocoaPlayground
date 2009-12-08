@@ -18,6 +18,7 @@ NSString *OPAlertFriendshipAcceptedType = @"friendship_accepted";
 NSString *OPAlertNewFriendType = @"new_friend";
 
 NSString *OPLoginAction = @"/API/Users/login";
+NSString *OPUpdateProfileAction = @"/API/Users/update";
 
 NSString *OPRetrivePollingMessageAction = @"/API/Polling/getPlurks";
 
@@ -91,6 +92,18 @@ NSString *OPRemoveUserFromCliqueAction = @"/API/Cliques/remove";
 		}
 	}
 	return s;
+}
+
+- (void)runQueue
+{
+	if ([_queue count]) {
+		id sessionInfo = [_queue objectAtIndex:0];
+		NSURL *URL = [sessionInfo objectForKey:@"URL"];	
+		NSLog(@"_request.requestHeader:%@", [_request.requestHeader description]);
+		[_request setSessionInfo:sessionInfo];
+		[_request performMethod:LFHTTPRequestGETMethod onURL:URL withData:nil];		
+		[_queue removeObject:sessionInfo];		
+	}
 }
 
 - (void)addRequestWithAction:(NSString *)actionName arguments:(NSDictionary *)arguments delegate:(id)delegate
@@ -177,7 +190,12 @@ NSString *OPRemoveUserFromCliqueAction = @"/API/Cliques/remove";
 	id delegate = [sessionInfo valueForKey:@"delegate"];	
 	NSString *actionName = [sessionInfo valueForKey:@"actionName"];	
 
-	if ([actionName isEqualToString:OPRetrivePollingMessageAction]) {
+	if ([actionName isEqualToString:OPUpdateProfileAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didUpdateProfile:)]) {
+			[delegate plurk:self didUpdateProfile:result];
+		}
+	}	
+	else if ([actionName isEqualToString:OPRetrivePollingMessageAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didRetrievePollingMessages:)]) {
 			[delegate plurk:self didRetrievePollingMessages:result];
 		}
@@ -409,6 +427,11 @@ NSString *OPRemoveUserFromCliqueAction = @"/API/Cliques/remove";
 
 	NSString *actionName = [sessionInfo valueForKey:@"actionName"];
 
+	if ([actionName isEqualToString:OPUpdateProfileAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailUpdatingProfile:)]) {
+			[delegate plurk:self didFailUpdatingProfile:error];
+		}
+	}		
 	if ([actionName isEqualToString:OPRetrivePollingMessageAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didFailRetrievingPollingMessages:)]) {
 			[delegate plurk:self didFailRetrievingPollingMessages:error];
@@ -632,26 +655,12 @@ NSString *OPRemoveUserFromCliqueAction = @"/API/Cliques/remove";
 	}
 }
 
-- (void)httpRequestDidComplete:(LFHTTPRequest *)request
-{
-	NSDictionary *sessionInfo = [request sessionInfo];
-	NSString *actionName = [sessionInfo valueForKey:@"actionName"];
-	if ([actionName isEqualToString:OPLoginAction]) {
-		[self loginDidSuccess:request];
-	}
-	else {
-		NSString *s = [[[NSString alloc] initWithData:[request receivedData] encoding:NSUTF8StringEncoding] autorelease];
-		NSDictionary *result = [NSDictionary dictionaryWithJSONString:s];
-		NSMutableDictionary *sessionInfoWithResult = [NSMutableDictionary dictionaryWithDictionary:sessionInfo];
-		[sessionInfoWithResult setValue:result forKey:@"result"];		
-		[self commonAPIDidSuccess:sessionInfoWithResult];
-	}
-	[self runQueue];
-}
+
 - (void)httpRequestDidCancel:(LFHTTPRequest *)request
 {
 	[self runQueue];
 }
+
 - (void)httpRequest:(LFHTTPRequest *)request didFailWithError:(NSString *)error
 {
 	NSDictionary *sessionInfo = [request sessionInfo];
@@ -669,6 +678,33 @@ NSString *OPRemoveUserFromCliqueAction = @"/API/Cliques/remove";
 
 	[self runQueue];
 }
+
+- (void)httpRequestDidComplete:(LFHTTPRequest *)request
+{
+	NSDictionary *sessionInfo = [request sessionInfo];
+	NSString *actionName = [sessionInfo valueForKey:@"actionName"];
+	if ([actionName isEqualToString:OPLoginAction]) {
+		[self loginDidSuccess:request];
+	}
+	else {
+		NSString *s = [[[NSString alloc] initWithData:[request receivedData] encoding:NSUTF8StringEncoding] autorelease];
+		if (!s) {
+			[self httpRequest:request didFailWithError:@"Failed to fetch contents."]; return;
+		}
+		
+		NSDictionary *result = [NSDictionary dictionaryWithJSONString:s];
+		
+		if (!result) {
+			[self httpRequest:request didFailWithError:@"Failed to fetch contents."]; return;
+		}		
+		
+		NSMutableDictionary *sessionInfoWithResult = [NSMutableDictionary dictionaryWithDictionary:sessionInfo];
+		[sessionInfoWithResult setValue:result forKey:@"result"];		
+		[self commonAPIDidSuccess:sessionInfoWithResult];
+	}
+	[self runQueue];
+}
+
 
 @end
 

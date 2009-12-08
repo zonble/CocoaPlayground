@@ -11,6 +11,7 @@
 @interface ObjectivePlurk(PrivateMethods)
 
 - (NSString *)GETStringFromDictionary:(NSDictionary *)inDictionary;
+- (void)runQueue;
 - (void)addRequestWithAction:(NSString *)actionName arguments:(NSDictionary *)arguments delegate:(id)delegate;
 
 - (void)loginDidSuccess:(LFHTTPRequest *)request;

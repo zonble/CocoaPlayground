@@ -20,6 +20,10 @@
 - (void)plurk:(ObjectivePlurk *)plurk didLoggedIn:(NSDictionary *)result;
 - (void)plurk:(ObjectivePlurk *)plurk didFailLoggingIn:(NSError *)error;
 
+- (void)plurk:(ObjectivePlurk *)plurk didUpdateProfile:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailUpdatingProfile:(NSError *)error;
+
+
 #pragma mark Polling
 
 - (void)plurk:(ObjectivePlurk *)plurk didRetrievePollingMessages:(NSDictionary *)result;
@@ -177,10 +181,17 @@
 #pragma mark -
 
 typedef enum {
-	OPGenderMale = 0,
-	OPGenderFemale = 1
+	OPGenderNone = 0,
+	OPGenderMale = 1,
+	OPGenderFemale = 2
 } OPGender;
 
+typedef enum {
+	OPPrivacyNone = 0,
+	OPPrivacyWorld = 1,
+	OPPrivacyOnlyFriends = 2,
+	OPPrivacyOnlyMe = 3,
+} OPPrivacy;
 
 typedef enum {
 	OPSmallUserProfileImageSize = 0,
@@ -205,6 +216,7 @@ extern NSString *OPAlertFriendshipAcceptedType;
 extern NSString *OPAlertNewFriendType;
 
 extern NSString *OPLoginAction;
+extern NSString *OPUpdateProfileAction;
 
 extern NSString *OPRetrivePollingMessageAction;
 
@@ -276,7 +288,7 @@ extern NSString *OPRemoveUserFromCliqueAction;
 + (ObjectivePlurk *)sharedInstance;
 - (void)cancelAllRequest;
 - (void)cancelAllRequestWithDelegate:(id)delegate;
-- (void)runQueue;
+
 - (void)logout;
 
 - (NSString *)imageURLStringForUser:(id)identifier size:(OPUserProfileImageSize)size hasProfileImage:(BOOL)hasProfileImage avatar:(NSString *)avatar;
@@ -284,6 +296,7 @@ extern NSString *OPRemoveUserFromCliqueAction;
 #pragma mark Users
 
 - (void)loginWithUsername:(NSString *)username password:(NSString *)password delegate:(id)delegate;
+- (void)updateProfileWithOldPassword:(NSString *)oldPassword fullname:(NSString *)fullname newPassword:(NSString *)newPassword email:(NSString *)email displayName:(NSString *)displayName privacy:(OPPrivacy)privacy dateOfBirth:(NSString *)dateOfBirth delegate:(id)delegate;
 
 #pragma mark Polling
 
