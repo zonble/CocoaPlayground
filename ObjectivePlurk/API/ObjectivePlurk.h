@@ -55,6 +55,9 @@
 - (void)plurk:(ObjectivePlurk *)plurk didAddMessage:(NSDictionary *)result;
 - (void)plurk:(ObjectivePlurk *)plurk didFailAddingMessage:(NSError *)error;
 
+- (void)plurk:(ObjectivePlurk *)plurk didUploadPicture:(NSDictionary *)result;
+- (void)plurk:(ObjectivePlurk *)plurk didFailUploadingPicture:(NSError *)error;
+
 - (void)plurk:(ObjectivePlurk *)plurk didDeleteMessage:(NSDictionary *)result;
 - (void)plurk:(ObjectivePlurk *)plurk didFailDeletingMessage:(NSError *)error;
 
@@ -232,6 +235,7 @@ extern NSString *const OPMuteMessagesAction;
 extern NSString *const OPUnmuteMessagesAction;
 extern NSString *const OPMarkMessageAsReadAction;
 extern NSString *const OPAddMessageAction;
+extern NSString *const OPUploadPictureAction;
 extern NSString *const OPDeleteMessageAction;
 extern NSString *const OPEditMessageAction;
 
@@ -317,7 +321,7 @@ extern NSString *const OPRemoveUserFromCliqueAction;
 - (void)unmuteMessagesWithMessageIdentifiers:(NSArray *)identifiers delegate:(id)delegate;
 - (void)markMessagesAsReadWithMessageIdentifiers:(NSArray *)identifiers delegate:(id)delegate;
 - (void)addNewMessageWithContent:(NSString *)content qualifier:(NSString *)qualifier othersCanComment:(OPCanComment)canComment lang:(NSString *)lang limitToUsers:(NSArray *)users delegate:(id)delegate;
-
+- (void)uploadPicture:(NSString *)path delegate:(id)delegate;
 - (void)deleteMessageWithMessageIdentifier:(NSString *)identifer delegate:(id)delegate;
 - (void)editMessageWithMessageIdentifier:(NSString *)identifer content:(NSString *)content delegate:(id)delegate;
 

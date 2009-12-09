@@ -32,6 +32,7 @@ NSString *const OPMuteMessagesAction = @"/API/Timeline/mutePlurks";
 NSString *const OPUnmuteMessagesAction = @"/API/Timeline/unmutePlurks";
 NSString *const OPMarkMessageAsReadAction = @"/API/Timeline/markAsRead";
 NSString *const OPAddMessageAction = @"/API/Timeline/plurkAdd";
+NSString *const OPUploadPictureAction = @"/API/Timeline/uploadPicture";
 NSString *const OPDeleteMessageAction = @"/API/Timeline/plurkDelete";
 NSString *const OPEditMessageAction = @"/API/Timeline/plurkEdit";
 
@@ -137,11 +138,13 @@ NSString *mimeTypeForExtension(NSString *ext)
     NSString *separator = GenerateUUIDString();
     NSMutableString *multipartBegin = [NSMutableString string];
     NSMutableString *multipartEnd = [NSMutableString string];
-	NSString *mimeType = mimeTypeForExtension([filename pathExtension]);
+//	NSString *mimeType = mimeTypeForExtension([filename pathExtension]);
 	
     // add filename, if nil, generate a UUID
     [multipartBegin appendFormat:@"--%@\r\nContent-Disposition: form-data; name=\"%@\"; filename=\"%@\"\r\n", separator, multipartName, filename];
-    [multipartBegin appendFormat:@"Content-Type: %@\r\n\r\n", mimeType];	
+//    [multipartBegin appendFormat:@"Content-Type: %@\r\n\r\n", mimeType];
+    [multipartBegin appendFormat:@"Content-Type: %@\r\n\r\n", @"application/octet-stream"];
+	
     [multipartEnd appendFormat:@"\r\n--%@--", separator];
     
     // now we have everything, create a temp file for this purpose; although UUID is inferior to 
@@ -213,7 +216,7 @@ NSString *mimeTypeForExtension(NSString *ext)
 - (NSString *)GETStringFromDictionary:(NSDictionary *)inDictionary
 {
 	NSMutableDictionary *d = [NSMutableDictionary dictionaryWithDictionary:inDictionary];
-	[d setValue:APIKey forKey:@"api_key"];
+	[d setObject:APIKey forKey:@"api_key"];
 	
 	NSMutableString *s = [NSMutableString string];
 	for (NSString *key in [d allKeys]) {
@@ -239,7 +242,7 @@ NSString *mimeTypeForExtension(NSString *ext)
 	}
 }
 
-- (void)addRequestWithAction:(NSString *)actionName arguments:(NSDictionary *)arguments filepath:(NSString *)filepath delegate:(id)delegate
+- (void)addRequestWithAction:(NSString *)actionName arguments:(NSDictionary *)arguments filepath:(NSString *)filepath multipartName:(NSString *)multipartName delegate:(id)delegate
 {
 	NSString *URLString = [ObjectivePlurkAPIURLString stringByAppendingString:actionName];
 	URLString = [URLString stringByAppendingString:[self GETStringFromDictionary:arguments]];
@@ -249,7 +252,7 @@ NSString *mimeTypeForExtension(NSString *ext)
 	
 	if (filepath) {
 		[_request cancelWithoutDelegateMessage];
-		[self uploadFile:filepath suggestedFilename:[filepath lastPathComponent] requestURL:URL multipartName:@"profile_image" sessionInfo:sessionInfo];
+		[self uploadFile:filepath suggestedFilename:[filepath lastPathComponent] requestURL:URL multipartName:multipartName sessionInfo:sessionInfo];
 	}	
 	else if (![_queue count] && ![_request isRunning]) {
 		[_request setSessionInfo:sessionInfo];
@@ -267,7 +270,7 @@ NSString *mimeTypeForExtension(NSString *ext)
 
 - (void)addRequestWithAction:(NSString *)actionName arguments:(NSDictionary *)arguments delegate:(id)delegate
 {
-	[self addRequestWithAction:actionName arguments:arguments filepath:nil delegate:delegate];
+	[self addRequestWithAction:actionName arguments:arguments filepath:nil multipartName:nil delegate:delegate];
 }
 
 
@@ -281,8 +284,8 @@ NSString *mimeTypeForExtension(NSString *ext)
 	
 	if ([result valueForKey:@"error_text"]) {
 		NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-		[dictionary setValue:sessionInfo forKey:@"sessionInfo"];
-		[dictionary setValue:[result valueForKey:@"error_text"] forKey:NSLocalizedDescriptionKey];
+		[dictionary setObject:sessionInfo forKey:@"sessionInfo"];
+		[dictionary setObject:[result valueForKey:@"error_text"] forKey:NSLocalizedDescriptionKey];
 		NSError *error = [NSError errorWithDomain:ObjectivePlurkErrorDomain code:0 userInfo:dictionary];
 		[self loginDidFail:error];		
 		return;
@@ -321,8 +324,8 @@ NSString *mimeTypeForExtension(NSString *ext)
 	
 	if ([result valueForKey:@"error_text"]) {
 		NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-		[dictionary setValue:sessionInfo forKey:@"sessionInfo"];
-		[dictionary setValue:[result valueForKey:@"error_text"] forKey:NSLocalizedDescriptionKey];
+		[dictionary setObject:sessionInfo forKey:@"sessionInfo"];
+		[dictionary setObject:[result valueForKey:@"error_text"] forKey:NSLocalizedDescriptionKey];
 		NSError *error = [NSError errorWithDomain:ObjectivePlurkErrorDomain code:0 userInfo:dictionary];
 		[self commonAPIDidFail:error];
 		return;
@@ -381,6 +384,11 @@ NSString *mimeTypeForExtension(NSString *ext)
 			[delegate plurk:self didAddMessage:result];
 		}
 	}
+	else if ([actionName isEqualToString:OPUploadPictureAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didUploadPicture:)]) {
+			[delegate plurk:self didUploadPicture:result];
+		}	
+	}		
 	else if ([actionName isEqualToString:OPDeleteMessageAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didDeleteMessage:)]) {
 			[delegate plurk:self didDeleteMessage:result];
@@ -623,6 +631,11 @@ NSString *mimeTypeForExtension(NSString *ext)
 			[delegate plurk:self didFailAddingMessage:error];
 		}	
 	}
+	else if ([actionName isEqualToString:OPUploadPictureAction]) {
+		if ([delegate respondsToSelector:@selector(plurk:didFailUploadingPicture:)]) {
+			[delegate plurk:self didFailUploadingPicture:error];
+		}	
+	}	
 	else if ([actionName isEqualToString:OPDeleteMessageAction]) {
 		if ([delegate respondsToSelector:@selector(plurk:didFailDeletingMessage:)]) {
 			[delegate plurk:self didFailDeletingMessage:error];
@@ -806,6 +819,8 @@ NSString *mimeTypeForExtension(NSString *ext)
 	}
 }
 
+#pragma mark -
+
 
 - (void)httpRequestDidCancel:(LFHTTPRequest *)request
 {
@@ -816,7 +831,8 @@ NSString *mimeTypeForExtension(NSString *ext)
 {
 	NSDictionary *sessionInfo = [request sessionInfo];
 	NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-	[dictionary setValue:sessionInfo forKey:@"sessionInfo"];	
+	[dictionary setObject:error forKey:NSLocalizedDescriptionKey];
+	[dictionary setObject:sessionInfo forKey:@"sessionInfo"];	
 	NSError *theError = [NSError errorWithDomain:ObjectivePlurkErrorDomain code:0 userInfo:dictionary];
 	
 	NSString *actionName = [sessionInfo valueForKey:@"actionName"];
@@ -850,7 +866,7 @@ NSString *mimeTypeForExtension(NSString *ext)
 		}		
 		
 		NSMutableDictionary *sessionInfoWithResult = [NSMutableDictionary dictionaryWithDictionary:sessionInfo];
-		[sessionInfoWithResult setValue:result forKey:@"result"];		
+		[sessionInfoWithResult setObject:result forKey:@"result"];		
 		[self commonAPIDidSuccess:sessionInfoWithResult];
 	}
 	[self runQueue];

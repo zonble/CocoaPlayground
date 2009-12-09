@@ -44,7 +44,8 @@ static ObjectivePlurk *sharedInstance;
 	self = [super init];
 	if (self != nil) {
 		_request = [[LFHTTPRequest alloc] init];
-		[_request setDelegate:self];
+		_request.delegate = self;
+//		_request.timeoutInterval = 60.0;
 		_queue = [[NSMutableArray alloc] init];
 		_dateFormatter = [[NSDateFormatter alloc] init];
 		[_dateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
@@ -153,7 +154,7 @@ static ObjectivePlurk *sharedInstance;
 
 - (void)updatePictureWithFile:(NSString *)path delegate:(id)delegate
 {
-	[self addRequestWithAction:OPUpdatePictureAction arguments:nil filepath:path delegate:delegate];
+	[self addRequestWithAction:OPUpdatePictureAction arguments:nil filepath:path multipartName:@"profile_image" delegate:delegate];
 }
 
 - (void)updateProfileWithOldPassword:(NSString *)oldPassword fullname:(NSString *)fullname newPassword:(NSString *)newPassword email:(NSString *)email displayName:(NSString *)displayName privacy:(OPPrivacy)privacy dateOfBirth:(NSString *)dateOfBirth delegate:(id)delegate
@@ -279,6 +280,11 @@ static ObjectivePlurk *sharedInstance;
 	}
 	NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:content, @"content", qualifier, @"qualifier", [[NSNumber numberWithInt:canComment] stringValue], @"no_comments", lang, @"lang", limitString, @"limited_to", nil];
 	[self addRequestWithAction:OPAddMessageAction arguments:args delegate:delegate];
+}
+
+- (void)uploadPicture:(NSString *)path delegate:(id)delegate
+{
+	[self addRequestWithAction:OPUploadPictureAction arguments:nil filepath:path multipartName:@"image" delegate:delegate];
 }
 
 - (void)deleteMessageWithMessageIdentifier:(NSString *)identifer delegate:(id)delegate

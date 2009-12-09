@@ -17,7 +17,7 @@
 
 - (NSString *)GETStringFromDictionary:(NSDictionary *)inDictionary;
 - (void)runQueue;
-- (void)addRequestWithAction:(NSString *)actionName arguments:(NSDictionary *)arguments filepath:(NSString *)filepath delegate:(id)delegate;
+- (void)addRequestWithAction:(NSString *)actionName arguments:(NSDictionary *)arguments filepath:(NSString *)filepath multipartName:(NSString *)multipartName delegate:(id)delegate;
 - (void)addRequestWithAction:(NSString *)actionName arguments:(NSDictionary *)arguments delegate:(id)delegate;
 
 - (void)loginDidSuccess:(LFHTTPRequest *)request;
